@@ -1,0 +1,4 @@
+uint8[] image
+string prompt
+---
+string result
