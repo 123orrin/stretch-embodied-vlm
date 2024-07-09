@@ -20,7 +20,7 @@ class VLServer(Node):
         self.processor = AutoProcessor.from_pretrained(self.model_id, trust_remote_code=True) 
 
     def vision_language_callback(self, request, response):
-        image = np.array(request.image)
+        image = np.array(request.image).reshape(720, 1080, 3)
         image = np.rot90(image, 1)
         image = PIL_Image.fromarray(image)
         messages = [ 
