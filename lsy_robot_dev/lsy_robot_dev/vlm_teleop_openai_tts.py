@@ -6,6 +6,7 @@ import hello_helpers.hello_misc as hm
 import os
 from sound_play.libsoundplay import SoundClient
 from sound_play_msgs.msg import SoundRequest
+from openai import OpenAI #### ZK added, OpenAI is installed globally
 
 import rclpy
 from rclpy.node import Node
@@ -22,8 +23,9 @@ from control_msgs.action import FollowJointTrajectory
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 from std_msgs.msg import Int32
 
-os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
-os.system('amixer set Master 200%') # ZK added
+# Set speaker and volume to activate the speakers
+os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo')
+os.system('amixer set Master 200%')
 
 class Prompt(Enum):
     DESCRIBE = 0
@@ -49,8 +51,12 @@ class VLMTeleop(hm.HelloNode):
         self.translate = 0.05 # meters
 
         self.soundhandle = SoundClient(self, blocking=True)
-        self.voice = 'voice_cmu_us_ahw_cg' # 'voice_kal_diphone' # 'voice_cmu_us_ahw_cg' # cmu_us_slt_cg
-        self.volume = 1.0
+        self.openai_key = os.getenv('OPENAI_API_KEY')
+        # print("openai_key: ", self.openai_key)
+        self.openai_client = OpenAI(api_key=self.openai_key)
+        self.tts_model = 'tts-1'
+        self.tts_voice = 'alloy'
+        self.tts_volume = 1.0
 
         ## Previously in GetVoiceCommands init
         # Initialize the voice command
@@ -196,11 +202,21 @@ class VLMTeleop(hm.HelloNode):
         
         joint_state = self.joint_state
 
+
         if prompt_type == Prompt.DESCRIBE:
             print('THIS IS WHAT I SEE')
+            tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
+                                                      voice=self.tts_voice,
+                                                      input=result.result,
+                                                      response_format="wav")
+            # audio_result_path = "~/lsy_software_tests/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
+            audio_result_path = "/home/hello-robot/lsy_software_tests/vlm_teleop_audio_output/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
+            tts_response.write_to_file(audio_result_path)
+            print("File should be saved now.")
             print("Speaking should start now.")
-            self.soundhandle.say(result.result, self.voice, self.volume)
+            self.soundhandle.playWave(audio_result_path, self.tts_volume)
             print("Speaking should have ended now.")
+
         elif prompt_type == Prompt.MOVE and joint_state is not None:
             result = result.result
             words = result.split(', ')
@@ -237,8 +253,7 @@ class VLMTeleop(hm.HelloNode):
                 trajectory_goal.trajectory.points = [point]
                 trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
                 #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
-                # Make the acsoundhandle.say(result.result, self.voice, self.volume)
-
+                # Make the action call and send goal of the new joint position
                 self.trajectory_client.send_goal_async(trajectory_goal)
                 print('test')
                 time.sleep(5)

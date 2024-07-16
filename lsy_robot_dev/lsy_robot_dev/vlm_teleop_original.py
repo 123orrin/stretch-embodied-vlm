@@ -1,11 +1,10 @@
-# MOST UP TO DATE CODE, 10-07-2024, 16:15
+# MOST UP TO DATE CODE, 05-07-2024, 17:21 
 
 from lsy_interfaces.srv import VLService
 import hello_helpers.hello_misc as hm
 
-import os
-from sound_play.libsoundplay import SoundClient
-from sound_play_msgs.msg import SoundRequest
+# from sound_play.libsoundplay import SoundClient
+# from sound_play_msgs.msg import SoundRequest
 
 import rclpy
 from rclpy.node import Node
@@ -21,9 +20,6 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from control_msgs.action import FollowJointTrajectory
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 from std_msgs.msg import Int32
-
-os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
-os.system('amixer set Master 200%') # ZK added
 
 class Prompt(Enum):
     DESCRIBE = 0
@@ -48,9 +44,9 @@ class VLMTeleop(hm.HelloNode):
         self.rotate = 20 * self.rad_per_deg # radians
         self.translate = 0.05 # meters
 
-        self.soundhandle = SoundClient(self, blocking=True)
-        self.voice = 'voice_cmu_us_ahw_cg' # 'voice_kal_diphone' # 'voice_cmu_us_ahw_cg' # cmu_us_slt_cg
-        self.volume = 1.0
+        # self.soundhandle = SoundClient(self, blocking=True)
+        # self.voice = 'voice_kal_diphone'
+        # self.volume = 1.0
 
         ## Previously in GetVoiceCommands init
         # Initialize the voice command
@@ -151,7 +147,6 @@ class VLMTeleop(hm.HelloNode):
     # Previously in VLClient
     def image_callback(self, msg):
         self.image = msg.data
-        # print("W, H: ", msg.width, msg.height)
 
     # def send_request(self, prompt):
     #     self.req.image = self.image
@@ -198,9 +193,14 @@ class VLMTeleop(hm.HelloNode):
 
         if prompt_type == Prompt.DESCRIBE:
             print('THIS IS WHAT I SEE')
-            print("Speaking should start now.")
-            self.soundhandle.say(result.result, self.voice, self.volume)
-            print("Speaking should have ended now.")
+            # print("Speaking should start now.")
+            # self.soundhandle.say("This is what I see.")
+            # self.soundhandle.say(result.result)
+            # print("Speaking should have ended now.")
+            print("type(result): ", type(result))
+            print("type(result.result): ", type(result.result))
+            print("type('test string'): ", type('test string'))
+            # soundhandle.say(result)
         elif prompt_type == Prompt.MOVE and joint_state is not None:
             result = result.result
             words = result.split(', ')
@@ -237,8 +237,7 @@ class VLMTeleop(hm.HelloNode):
                 trajectory_goal.trajectory.points = [point]
                 trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
                 #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
-                # Make the acsoundhandle.say(result.result, self.voice, self.volume)
-
+                # Make the action call and send goal of the new joint position
                 self.trajectory_client.send_goal_async(trajectory_goal)
                 print('test')
                 time.sleep(5)
