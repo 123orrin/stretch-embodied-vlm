@@ -1,6 +1,7 @@
 # MOST UP TO DATE CODE, 10-07-2024, 16:15
 
 from lsy_interfaces.srv import VLService
+from lsy_interfaces.srv import PrePrompt
 import hello_helpers.hello_misc as hm
 
 import os
@@ -29,12 +30,6 @@ class Prompt(Enum):
     DESCRIBE = 0
     MOVE = 1
 
-class GetVoiceCommands:
-    pass  
-
-class VLClient(Node):
-    pass
-
 class VLMTeleop(hm.HelloNode):
 
     def __init__(self):
@@ -43,6 +38,10 @@ class VLMTeleop(hm.HelloNode):
 
         self.rate = 10.0
         self.joint_state = None
+        
+        self.image = None
+        self.prompt = None
+        self.result = None
 
         self.rad_per_deg = math.pi/180.0
         self.rotate = 20 * self.rad_per_deg # radians
@@ -52,31 +51,38 @@ class VLMTeleop(hm.HelloNode):
         self.voice = 'voice_cmu_us_ahw_cg' # 'voice_kal_diphone' # cmu_us_slt_cg
         self.volume = 1.0
 
-        ## Previously in GetVoiceCommands init
         # Initialize the voice command
-        self.voice_command = ' '
+        self.voice_command = ' ' 
 
         # Initialize the sound direction
-        self.sound_direction = 0
+        self.sound_direction = 0 # not used?
 
         # Initialize subscribers
         self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1)
         self.sound_direction_sub = self.create_subscription(Int32, "/sound_direction", self.callback_direction, 1)
         self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
-
-        ## Previously in VLClient init
-        self.cli = self.create_client(VLService, 'vision_language_client')
-        while not self.cli.wait_for_service(timeout_sec=1.0):
-            print('service not available, waiting again')
-            #self.get_logger().info('service not available, waiting again...')
-        self.req = VLService.Request()
-        self.client_futures = []
-        self.future = None
-
+        # should we use the following instead of line above?
+        # self.joint_state_sub = self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
         self.image_sub = self.create_subscription(Image, 'camera/color/image_raw', self.image_callback, 1)
-        self.image = None
-        self.prompt = None
-        self.result = None
+
+        # Initialize variables related to VLService
+        self.vl_cli = self.create_client(VLService, 'vision_language_client')
+        while not self.vl_cli.wait_for_service(timeout_sec=1.0):
+            print('VLService not available, waiting again')
+            #self.get_logger().info('service not available, waiting again...')
+        self.vl_req = VLService.Request()
+        self.vl_cli_futures = []
+        self.vl_future = None
+        
+        # Initialize variables related to PrePrompt service
+        self.pp_cli = self.create_client(PrePrompt, 'preprompt_client')
+        while not self.pp_cli.wait_for_service(timeout_sec=1.0):
+            print('PrePrompt service not available, waiting again')
+            #self.get_logger().info('service not available, waiting again...')
+        self.pp_req = PrePrompt.Request()
+        self.pp_cli_futures = []
+        self.pp_future = None
+
     
     # Previously in GetVoiceCommands
     def callback_direction(self, msg):
@@ -148,22 +154,14 @@ class VLMTeleop(hm.HelloNode):
         return (prompt_type, prompt)
     
 
-    # Previously in VLClient
     def image_callback(self, msg):
         self.image = msg.data
         # print("W, H: ", msg.width, msg.height)
-
-    # def send_request(self, prompt):
-    #     self.req.image = self.image
-    #     self.req.prompt = prompt
-    #     self.future = self.cli.call_async(self.req)
-    #     return self.cli.call_async(self.req)
     
     def read_message(self):
         self.get_logger().info(self.result)
 
 
-    # Original functions in VLMTeleop
     def _dummy(self):
         pass
 
@@ -185,13 +183,13 @@ class VLMTeleop(hm.HelloNode):
             return
 
         print('Processing Prompt')
-        self.req.image = self.image
-        self.req.prompt = prompt
+        self.vl_req.image = self.image
+        self.vl_req.prompt = prompt
         
-        self.future = self.cli.call_async(self.req)
-        rclpy.spin_until_future_complete(self, self.future) ########## HELLO, HI, I'M THE PROBLEM ITS ME
+        self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
+        rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME
         print('Finished getting VLM answer')
-        result = self.future.result()
+        result = self.vl_cli_future.result()
         self.get_logger().info(f'VLM Result: {result}')
         
         joint_state = self.joint_state
