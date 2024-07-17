@@ -20,18 +20,31 @@ class VLServer(Node):
         self.processor = AutoProcessor.from_pretrained(self.model_id, trust_remote_code=True) 
 
     def vision_language_callback(self, request, response):
-        image = np.array(request.image).reshape(720, 1080, 3)
-        image = np.rot90(image, 1)
-        image = PIL_Image.fromarray(image)
-        messages = [ 
-            {"role": "user", "content": f"<|image|>\n {request.prompt}"} 
-            #{"role": "assistant", "content": "The chart displays the percentage of respondents who agree with various statements about their preparedness for meetings. It shows five categories: 'Having clear and pre-defined goals for meetings', 'Knowing where to find the information I need for a meeting', 'Understanding my exact role and responsibilities when I'm invited', 'Having tools to manage admin tasks like note-taking or summarization', and 'Having more focus time to sufficiently prepare for meetings'. Each category has an associated bar indicating the level of agreement, measured on a scale from 0% to 100%."}, 
-            #{"role": "user", "content": "Provide insightful questions to spark discussion."} 
-        ] 
+        if request.use_image == True:
+            image = np.array(request.image).reshape(720, 1080, 3)
+            image = np.rot90(image, 1)
+            image = PIL_Image.fromarray(image)
+            messages = [ 
+                {"role": "user", "content": f"<|image|>\n {request.prompt}"} 
+                #{"role": "assistant", "content": "The chart displays the percentage of respondents who agree with various statements about their preparedness for meetings. It shows five categories: 'Having clear and pre-defined goals for meetings', 'Knowing where to find the information I need for a meeting', 'Understanding my exact role and responsibilities when I'm invited', 'Having tools to manage admin tasks like note-taking or summarization', and 'Having more focus time to sufficiently prepare for meetings'. Each category has an associated bar indicating the level of agreement, measured on a scale from 0% to 100%."}, 
+                #{"role": "user", "content": "Provide insightful questions to spark discussion."} 
+            ] 
 
-        prompt = self.processor.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            prompt = self.processor.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-        inputs = self.processor(prompt, [image], return_tensors="pt").to("cuda:0") 
+            inputs = self.processor(prompt, [image], return_tensors="pt").to("cuda:0") 
+        
+        else: # request.use_image == False
+            messages = [ 
+                {"role": "user", "content": f"{request.prompt}"} 
+                #{"role": "assistant", "content": "The chart displays the percentage of respondents who agree with various statements about their preparedness for meetings. It shows five categories: 'Having clear and pre-defined goals for meetings', 'Knowing where to find the information I need for a meeting', 'Understanding my exact role and responsibilities when I'm invited', 'Having tools to manage admin tasks like note-taking or summarization', and 'Having more focus time to sufficiently prepare for meetings'. Each category has an associated bar indicating the level of agreement, measured on a scale from 0% to 100%."}, 
+                #{"role": "user", "content": "Provide insightful questions to spark discussion."} 
+            ] 
+
+            prompt = self.processor.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+            inputs = self.processor(prompt, return_tensors="pt").to("cuda:0")     
+                
                 
         generation_args = { 
             "max_new_tokens": 500, 

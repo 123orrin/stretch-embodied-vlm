@@ -1,7 +1,7 @@
 # MOST UP TO DATE CODE, 10-07-2024, 16:15
 
 from lsy_interfaces.srv import VLService
-from lsy_interfaces.srv import PrePromptService
+# from lsy_interfaces.srv import PrePromptService
 import hello_helpers.hello_misc as hm
 
 import os
@@ -26,9 +26,6 @@ from std_msgs.msg import Int32
 os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
 os.system('amixer set Master 200%') # ZK added
 
-class Prompt(Enum):
-    DESCRIBE = 0
-    MOVE = 1
 
 class VLMTeleop(hm.HelloNode):
 
@@ -75,14 +72,14 @@ class VLMTeleop(hm.HelloNode):
         self.vl_cli_futures = []
         self.vl_future = None
         
-        # Initialize variables related to PrePrompt service
-        self.pp_cli = self.create_client(PrePromptService, 'preprompt_service')
-        while not self.pp_cli.wait_for_service(timeout_sec=1.0):
-            print('PrePromptService service not available, waiting again')
-            #self.get_logger().info('service not available, waiting again...')
-        self.pp_req = PrePromptService.Request()
-        self.pp_cli_futures = []
-        self.pp_future = None
+        # # Initialize variables related to PrePrompt service
+        # self.pp_cli = self.create_client(PrePromptService, 'preprompt_service')
+        # while not self.pp_cli.wait_for_service(timeout_sec=1.0):
+        #     print('PrePromptService service not available, waiting again')
+        #     #self.get_logger().info('service not available, waiting again...')
+        # self.pp_req = PrePromptService.Request()
+        # self.pp_cli_futures = []
+        # self.pp_future = None
 
 
     ## Callback functions
@@ -115,79 +112,34 @@ class VLMTeleop(hm.HelloNode):
     ## Retrieving and processing prompts
     def get_preprompt(self):
         self.user_prompt = self.voice_command ## need to confirm that this is correct
-        
         if self.user_prompt is None:
             return
 
         print('Processing initial query')
-        query = 'You are given three categories: "describe", "move", "chat". From these three categories, output the one that best represents the prompt below. In case of uncertainty, output "chat". /nPrompt: ' + self.user_prompt
+        query = 'You are given three categories: "describe", "move", "chat". From these three categories, output the one that best represents the prompt below. In case of uncertainty, output "chat". \nPrompt: ' + self.user_prompt
         # query = 'You are given three categories: "describe", "move", "chat". From these three categories, output the one that best represents the prompt below. If you output "chat", please also continue the conversation on a new line. In case of uncertainty, output "chat". /nPrompt: ' + self.user_prompt
         print('Initial query: ', query)
-        self.pp_req.query = query
+        self.vl_req.prompt = query
+        self.vl_req.image = self.image
+        self.vl_req.use_image = False
         
-        self.pp_cli_future = self.pp_cli.call_async(self.pp_req)
-        rclpy.spin_until_future_complete(self, self.pp_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME
+        self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
+        rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
         print('Finished getting initial result from VLM')
-        result = self.pp_cli_future.result()
+        result = self.vl_cli_future.result()
+        preprompt = result.result ## need to confirm that this is correct
         self.get_logger().info(f'VLM Result, aka preprompt: {result}')
-        preprompt = result.preprompt ## need to confirm that this is correct
         print('preprompt: ', preprompt) 
         ## need to decide whether to keep preprompt as local var or revert to global (self.preprompt)
         
+        # Reset voice command to None so that it's ready for next iteration of getting preprompt; OK to do this since we've already saved self.voice_command to self.user_prompt
+        self.voice_command = ' ' # not sure about the best location for this line
+        
         return preprompt
-    
-    
-    def get_prompt(self, preprompt):
-        prompt_type = None
-        prompt = None
-        # Move base forward command
-        if 'describe' in self.voice_command:
-            prompt_type = Prompt.DESCRIBE
-            prompt = 'Describe what you see in the image in a short sentence.'
-
-        # Move base back command
-        if 'move' in self.voice_command:
-            prompt_type = Prompt.MOVE
-            desired_obj = self.voice_command.split(' ')[-1]
-            prompt = f'Describe how to move from your current location to the {desired_obj}. Please answer by providing a comma separated array using only a combination of the words in the following list [forward, backward, left, right].'
-
-        # Rotate base right command
-        if self.voice_command == 'qwerty':
-            prompt = 'Please say potato'
-            #command = {'joint': 'rotate_mobile_base', 'inc': -self.get_inc()['rad']}
-
-        # Move base to sound direction command
-        if self.voice_command == 'werty':
-            prompt = 'Please say potato'
-            #command = {'joint': 'translate_mobile_base', 'inc': self.get_inc['translate']}
-
-        if self.voice_command == 'ertyu':
-            # Sends a signal to ros to shutdown the ROS interfaces
-            self.get_logger().info("done")
-
-            # Exit the Python interpreter
-            sys.exit(0)
-
-        # Reset voice command to None
-        self.voice_command = ' '
-
-        # return the updated command
-        return (prompt_type, prompt)
-    
-
-    def timer_get_prompt(self): ### why do we need a timer? --> 
-        # Get voice command
-        prompt_type, prompt = self.get_prompt()
-
-        if prompt != None:
-            self.get_logger().info(f'Prompt: {prompt}')
-        # self.speaker.say('I am Hello Robot.')
-        # Send voice command for joint trajectory goals
-        self.process_prompt(prompt_type, prompt)
 
 
     def process_prompt(self, preprompt):
-        if self.user_prompt is None:
+        if preprompt is None:
             return
 
         joint_state = self.joint_state
@@ -196,6 +148,7 @@ class VLMTeleop(hm.HelloNode):
             print('Sending user prompt along with image to VLM')
             self.vl_req.image = self.image
             self.vl_req.prompt = self.user_prompt
+            self.vl_req.use_image = True
             self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
             rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
             print('Finished getting VLM answer')
@@ -206,7 +159,7 @@ class VLMTeleop(hm.HelloNode):
             print("Robot speaking should have ended now.")
             
         elif preprompt == 'move' and joint_state is not None:
-            # run Ken's 
+            # call Ken's code here
             pass ## delete when connection to concept graphs and navigation pipeline is ready
             ## automatically start concept graphs mapping and navigation modules, don't use Phi3 for movement anymore
             # once movement is done, have the robot say that it's reached its target
@@ -214,64 +167,17 @@ class VLMTeleop(hm.HelloNode):
             self.soundhandle.say("I have reached the target.", self.voice, self.volume)
             print("Robot speaking should have ended now.")
 
-        else: # preprompt == 'chat'
-            pass ## send image, similar to 'describe' mode?
+        # else: # preprompt == 'chat'
+        #    pass ## send image, similar to 'describe' mode?
             # maybe remove this else statement if team agrees with using same framework for describe and chat
-            
-            
-            
-        # elif prompt_type == Prompt.MOVE and joint_state is not None:
-        #     result = result.result
-        #     words = result.split(', ')
-        #     print(f'Commands: {words}')
-        #     for command in words:
-        #         # Assign point as a JointTrajectoryPoint message prompt_type
-        #         point = JointTrajectoryPoint()
-        #         point.time_from_start = Duration(seconds=0).to_msg()
-
-        #         # Assign trajectory_goal as a FollowJointTrajectoryGoal message prompt_type
-        #         trajectory_goal = FollowJointTrajectory.Goal()
-        #         trajectory_goal.goal_time_tolerance = Duration(seconds=0).to_msg()
-
-        #         # Extract the joint name from the command dictionary
-        #         print(f'Command: {command}')
-        #         if command == 'forward':
-        #             joint_name = 'translate_mobile_base'
-        #             inc = self.translate
-        #         elif command == 'backward':
-        #             joint_name = 'translate_mobile_base'
-        #             inc = -self.translate
-        #         elif command == 'right':
-        #             joint_name = 'rotate_mobile_base'
-        #             inc = self.rotate
-        #         elif command == 'left':
-        #             joint_name = 'rotate_mobile_base'
-        #             inc = -self.rotate
-
-        #         trajectory_goal.trajectory.joint_names = [joint_name]
-        #         new_value = inc
-
-        #         # Assign the new_value position to the trajectory goal message prompt_type
-        #         point.positions = [new_value]
-        #         trajectory_goal.trajectory.points = [point]
-        #         trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
-        #         #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
-        #         # Make the acsoundhandle.say(result.result, self.voice, self.volume)
-
-        #         self.trajectory_client.send_goal_async(trajectory_goal)
-        #         print('test')
-        #         time.sleep(5)
-        #         self.get_logger().info('Done sending command.')
-        #     self.get_logger().info('Finished Moving to Desired Object')
 
 
     ## Node main
     def main(self):
         while rclpy.ok():
             rclpy.spin_once(self)
-            ### add lines(s) here to get and process preprompt
-            prompt_type, prompt = self.get_prompt()
-            self.process_prompt(prompt_type, prompt)            
+            preprompt = self.get_preprompt()
+            self.process_prompt(preprompt)            
 
 
 def main(args=None):
