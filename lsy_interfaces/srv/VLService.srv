@@ -1,4 +1,5 @@
 uint8[] image
 string prompt
+bool use_image
 ---
 string result

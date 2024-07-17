@@ -20,7 +20,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'test_node = lsy_robot_dev.test_node:main',
+            'vision_language_service = lsy_robot_dev.vision_language_client:main',
             'vlm_teleop = lsy_robot_dev.vlm_teleop:main',
+            'vlm_teleop_tmp = lsy_robot_dev.vlm_teleop_tmp:main',
             'test_service = lsy_robot_dev.test_service:main'
         ],
     },
