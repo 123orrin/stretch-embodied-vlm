@@ -21,7 +21,6 @@ class NavigateConceptGraph:
         # else:
         query_gpt = query
 
-
         self.object_desc_base = query
         # query_gpt = f"'The object described as '{query}' is not in the scene. Find a likely container or storage space where someone is likely to have moved the object described as '{query}'?"
         """query_gpt = (f"The object described as '{self.object_desc_base}' is not in the scene. "
@@ -30,9 +29,10 @@ class NavigateConceptGraph:
                  f"appropriate for the missing object (eg: a a cabinet for a wineglass, or closet for a broom). "
                  f"So the new query is find a likely container or storage space where someone typically would"
                  f"have moved the object described as '{self.object_desc_base}'?")"""
-        query_gpt = (f"The objects in the scene were found in a house. Which object best accomplishes the desired user goal: {query}?")
         # query_gpt = (f"The objects in the scene were found in a house. Find an a storage space or container "
         #              f"where would you expect to find '{self.object_desc_base}' in a typical house.")
+
+        query_gpt = (f"The objects in the scene were found in a house. Find an object that best accomplishes the user query: {self.object_desc_base}")
 
         response = query_llm(query_gpt, self.system_prompt, scene, client=self.client)
 
@@ -45,14 +45,15 @@ class NavigateConceptGraph:
             # Find object data
             for object_data in self.scene_desc:
                 if object_data["id"] == object_id:
-                    break
+                    target_coords = object_data['bbox_center']
 
 
             # Publish the message
         else:
             object_id, object_desc = -1, "NOT AN OBJECT"
+            target_coords = None
 
-        return dict(object_id=object_id, object_desc=object_desc, query_achievable=query_achievable)
+        return dict(object_id=object_id, object_desc=object_desc, query_achievable=query_achievable), target_coords
         
 
 if __name__ == "__main__":

@@ -23,6 +23,7 @@ from control_msgs.action import FollowJointTrajectory
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 from std_msgs.msg import Int32
 
+from geometry_msgs.msg import PointStamped
 from navigation.NavigateConceptGraph import *
 
 # Set speaker and volume to activate the speakers
@@ -71,6 +72,7 @@ class VLMTeleop(hm.HelloNode):
         self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1)
         self.sound_direction_sub = self.create_subscription(Int32, "/sound_direction", self.callback_direction, 1)
         self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
+        self.target_point_publisher = self.create_publisher(PointStamped, "/clicked_point", 1)
 
         ## Previously in VLClient init
         self.cli = self.create_client(VLService, 'vision_language_client')
@@ -223,9 +225,22 @@ class VLMTeleop(hm.HelloNode):
             result = result.result
             words = result.split(', ')
 
-            nav = NavigateConceptGraph(system_prompt_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/prompts/concept_graphs_planner.txt', scene_json_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/obj_json_r_mapping_stride13.json')
-            target_object = nav.query_goal(query='something I can sit on', visual=False, excluded_ids=[])
+            nav = NavigateConceptGraph(system_prompt_path='/home/hello-robot/ament_ws/src/stretch_embodied_vlm/lsy_robot_dev/lsy_robot_dev/navigation/prompts/concept_graphs_planner.txt', scene_json_path='/home/hello-robot/ament_ws/src/stretch_embodied_vlm/lsy_robot_dev/lsy_robot_dev/navigation/obj_json_r_mapping_stride13.json')
+            target_object, target_coords = nav.query_goal(query='something I can sit on', visual=False, excluded_ids=[])
+
             print(target_object)
+            print(target_coords)
+
+            if target_object['object_id'] != -1:
+
+                msg = PointStamped()
+                msg.header.frame_id = '/base_link'
+
+                msg.point.x = target_coords[0]
+                msg.point.y = target_coords[1]
+                msg.point.z = target_coords[2]
+
+                self.target_point_publisher.publish(msg)
 
             """print(f'Commands: {words}')
             for command in words:
