@@ -175,7 +175,7 @@ class VLMTeleop(hm.HelloNode):
         return (prompt_type, prompt)
     
 
-    def timer_get_prompt(self): ### why do we need a timer?
+    def timer_get_prompt(self): ### why do we need a timer? --> 
         # Get voice command
         prompt_type, prompt = self.get_prompt()
 
@@ -206,6 +206,7 @@ class VLMTeleop(hm.HelloNode):
             print("Robot speaking should have ended now.")
             
         elif preprompt == 'move' and joint_state is not None:
+            # run Ken's 
             pass ## delete when connection to concept graphs and navigation pipeline is ready
             ## automatically start concept graphs mapping and navigation modules, don't use Phi3 for movement anymore
             # once movement is done, have the robot say that it's reached its target
