@@ -1,3 +1,3 @@
-string user_prompt
+string query
 ---
 string preprompt
