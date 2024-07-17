@@ -22,6 +22,9 @@ from control_msgs.action import FollowJointTrajectory
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 from std_msgs.msg import Int32
 
+from geometry_msgs.msg import PointStamped
+from navigation.NavigateConceptGraph import *
+
 os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
 os.system('amixer set Master 200%') # ZK added
 
@@ -61,6 +64,7 @@ class VLMTeleop(hm.HelloNode):
         # should we use the following instead of line above?
         # self.joint_state_sub = self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
         self.image_sub = self.create_subscription(Image, 'camera/color/image_raw', self.image_callback, 1)
+        self.target_point_publisher = self.create_publisher(PointStamped, "/clicked_point", 1)
 
         # Initialize variables related to VLService
         self.vl_cli = self.create_client(VLService, 'vision_language_client')
@@ -138,7 +142,10 @@ class VLMTeleop(hm.HelloNode):
             print('Sending user prompt along with image to VLM')
             self.vl_req.image = self.image
             self.vl_req.prompt = self.user_prompt
-            self.vl_req.use_image = True
+            if preprompt == 'describe':
+                self.vl_req.use_image = True
+            else:
+                self.vl_req.use_image = False
             self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
             rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
             print('Finished getting VLM answer')
@@ -156,6 +163,23 @@ class VLMTeleop(hm.HelloNode):
             print("Robot speaking should start now.")
             self.soundhandle.say("I have reached the target.", self.voice, self.volume)
             print("Robot speaking should have ended now.")
+
+            nav = NavigateConceptGraph(system_prompt_path='/home/hello-robot/ament_ws/src/stretch_embodied_vlm/lsy_robot_dev/lsy_robot_dev/navigation/prompts/concept_graphs_planner.txt', scene_json_path='/home/hello-robot/ament_ws/src/stretch_embodied_vlm/lsy_robot_dev/lsy_robot_dev/navigation/obj_json_r_mapping_stride13.json')
+            target_object, target_coords = nav.query_goal(query='something I can sit on', visual=False, excluded_ids=[])
+
+            print(target_object)
+            print(target_coords)
+
+            if target_object['object_id'] != -1:
+
+                msg = PointStamped()
+                msg.header.frame_id = '/base_link'
+
+                msg.point.x = target_coords[0]
+                msg.point.y = target_coords[1]
+                msg.point.z = target_coords[2]
+
+                self.target_point_publisher.publish(msg)
 
         # else: # preprompt == 'chat'
         #    pass ## send image, similar to 'describe' mode?
