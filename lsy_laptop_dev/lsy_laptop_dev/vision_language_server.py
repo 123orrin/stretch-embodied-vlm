@@ -3,10 +3,19 @@ from lsy_interfaces.srv import VLService
 import rclpy
 from rclpy.node import Node
 
-from PIL import Image as PIL_Image 
+import os
+import base64
+import requests
+import json
+
+from openai import OpenAI
+ 
 import numpy as np
-from transformers import AutoModelForCausalLM 
-from transformers import AutoProcessor 
+from PIL import Image as PIL_Image
+# from transformers import AutoModelForCausalLM 
+# from transformers import AutoProcessor 
+
+from geometry_msgs.msg import PointStamped
 
 
 class VLServer(Node):
@@ -15,50 +24,95 @@ class VLServer(Node):
         super().__init__('vision_language_server')
         self.srv = self.create_service(VLService, 'vision_language_client', self.vision_language_callback)
 
-        self.model_id = "microsoft/Phi-3-vision-128k-instruct" 
-        self.model = AutoModelForCausalLM.from_pretrained(self.model_id, device_map="cuda", trust_remote_code=True, torch_dtype="auto", _attn_implementation='flash_attention_2') # use _attn_implementation='eager' to disable flash attention
-        self.processor = AutoProcessor.from_pretrained(self.model_id, trust_remote_code=True) 
+        self.openai_key = os.getenv('OPENAI_API_KEY')
+        self.openai_client = OpenAI(api_key=self.openai_key)
+        self.model_id = "gpt-4o-mini"  # using gpt-4o-mini because according to OpenAI, it is cheaper and faster than gpt-3.5-turbo as of July 2024
+        # self.model_id_vision = "gpt-4o-mini-2024-07-18"
+        # self.model_id_chat = "gpt-3.5-turbo-0125"
+        self.openai_vision_detail = "low"  # can also be set to: "high" or "auto", but "high" is more expensive
+
+        self.image_path = '/home/hornywombat/stretch-images-vlmteleop/vlm_teleop_image.jpeg'
+
+        self.sub = self.create_subscription(PointStamped, '/clicked_point', self.a, 1)
+
+    def a(self, msg):
+        print('GOT POINTSTAMPED')
+        print(msg.point.x, msg.point.y, msg.point.z)
+
+    def encode_image(self):
+        with open(self.image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode('utf-8')
+        # return base64.b64encode(image).decode('utf-8')
 
     def vision_language_callback(self, request, response):
-        if request.use_image == True:
-            image = np.array(request.image).reshape(720, 1080, 3)
-            image = np.rot90(image, 1)
+        if request.use_image:
+            image = np.array(request.image).reshape(720, 1280, 3)
+            image = np.rot90(image, 3)
             image = PIL_Image.fromarray(image)
-            messages = [ 
-                {"role": "user", "content": f"<|image|>\n {request.prompt}"} 
-                #{"role": "assistant", "content": "The chart displays the percentage of respondents who agree with various statements about their preparedness for meetings. It shows five categories: 'Having clear and pre-defined goals for meetings', 'Knowing where to find the information I need for a meeting', 'Understanding my exact role and responsibilities when I'm invited', 'Having tools to manage admin tasks like note-taking or summarization', and 'Having more focus time to sufficiently prepare for meetings'. Each category has an associated bar indicating the level of agreement, measured on a scale from 0% to 100%."}, 
-                #{"role": "user", "content": "Provide insightful questions to spark discussion."} 
-            ] 
+            image = image.save(self.image_path)
+            # image = np.ascontiguousarray(image)
+            base64_image = self.encode_image()
 
-            prompt = self.processor.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-            inputs = self.processor(prompt, [image], return_tensors="pt").to("cuda:0") 
+            headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.openai_key}"
+            }
+
+            payload = {
+            "model": self.model_id,
+            "messages": [
+                {
+                "role": "user",
+                "content": [
+                    {
+                    "type": "text",
+                    "text": f"{request.prompt}. Respond in less than 40 words."
+                    },
+                    {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}",
+                        "detail": self.openai_vision_detail
+                    }
+                    }
+                ]
+                }
+            ],
+            "max_tokens": 300
+            }
+
+            completion = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+            # completion_data = json.load(completion.json())
+
+            completion_json = completion.json()
+            completion_choices_dict = completion_json.get('choices')[0]
+            completion_message_content = completion_choices_dict.get('message').get('content')
+            #completion_data = json.load(completion_json)
+
+            print('type(completion.json()): ', type(completion.json()), '\ncompletion.json(): ', completion.json())
+            # print(completion_data)
+            #print('completion_json.keys()', completion_json.keys())
+            #print('completion_json.get("choices")', completion_json.get('choices'))
+            print('##### completion_message_content', completion_message_content)
+            #print('completion_json.get("choices")[0].message.content: ', completion_json.get('choices')[0].message.content)
+
         
-        else: # request.use_image == False
-            messages = [ 
-                {"role": "user", "content": f"{request.prompt}"} 
-                #{"role": "assistant", "content": "The chart displays the percentage of respondents who agree with various statements about their preparedness for meetings. It shows five categories: 'Having clear and pre-defined goals for meetings', 'Knowing where to find the information I need for a meeting', 'Understanding my exact role and responsibilities when I'm invited', 'Having tools to manage admin tasks like note-taking or summarization', and 'Having more focus time to sufficiently prepare for meetings'. Each category has an associated bar indicating the level of agreement, measured on a scale from 0% to 100%."}, 
-                #{"role": "user", "content": "Provide insightful questions to spark discussion."} 
-            ] 
-
-            prompt = self.processor.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-
-            inputs = self.processor(prompt, return_tensors="pt").to("cuda:0")     
-                
-                
-        generation_args = { 
-            "max_new_tokens": 500, 
-            "temperature": 0.0, 
-            "do_sample": False, 
-        } 
-
-        generate_ids = self.model.generate(**inputs, eos_token_id=self.processor.tokenizer.eos_token_id, **generation_args) 
-
-        generate_ids = generate_ids[:, inputs['input_ids'].shape[1]:]
-        response.result = self.processor.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0] 
-
-        print(response.result)
+        else:
+            completion = self.openai_client.chat.completions.create(
+                            model=self.model_id,
+                            messages=[
+                                #{"role": "system", "content": "You are a helpful assistant."},
+                                {"role": "user", "content": f"{request.prompt}. Respond in less than 20 words."}
+                            ]
+                            )
+            
+            print('completion.choices[0].message', completion.choices[0].message)
+            print('completion.choices[0].message.content', completion.choices[0].message.content)
+            completion_message_content = completion.choices[0].message.content
         
+        response.result = completion_message_content
+            
         return response
 
 
