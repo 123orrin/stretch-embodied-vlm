@@ -198,12 +198,13 @@ class VLMTeleop(hm.HelloNode):
         if prompt_type == 'describe' or prompt_type == 'chat':
             self.vl_req.image = self.image
             self.vl_req.prompt = prompt
-            if prompt_type == 'describe':
+            self.vl_req.use_image = True
+            #if prompt_type == 'describe':
                 #print('Mode: describe. Sending user prompt along with image to VLM')
-                self.vl_req.use_image = True
-            else:
+                #self.vl_req.use_image = True
+            #else:
                 #print('Mode: chat. Sending only user prompt to VLM')
-                self.vl_req.use_image = False
+                #self.vl_req.use_image = False
             self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
             rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
             print('Finished getting VLM answer')
