@@ -10,7 +10,7 @@ class MinimalService(Node):
         self.srv = self.create_service(VLService, 'vision_language_client', self.add_two_ints_callback)
 
     def add_two_ints_callback(self, request, response):
-        return 'I see skies of blue, and clouds of white'
+        return 'test'
 
 
 def main():
