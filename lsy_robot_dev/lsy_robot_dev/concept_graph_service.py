@@ -45,6 +45,7 @@ class ConceptGraphsHost(Node):
 
     def __init__(self):
         super().__init__('concept_graph_service')
+        self.get_logger().info('STARTING SERVICE...')
         self.rgb_sub = self.create_subscription(Image, 'camera/color/image_raw', self.rgb_callback, 1)
         self.depth_sub = self.create_subscription(Image, 'camera/aligned_depth_to_color/image_raw', self.depth_callback, 1)
         self.intrinsics_sub = self.create_subscription(CameraInfo, '/camera/color/camera_info', self.camera_info_callback, 1)
@@ -60,6 +61,7 @@ class ConceptGraphsHost(Node):
         self.srv
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
+        self.get_logger().info('SERVICE HAS BEEN STARTED...')
 
     def receive_imgs(self, request, response):
         # pose code inside timer callback
@@ -84,7 +86,7 @@ class ConceptGraphsHost(Node):
             response.depth_image = None
             response.intrinsics = None
             response.pose = None
-    
+        print('end of callback')
         return response
         
         #self.pose = make_matrix(t)
