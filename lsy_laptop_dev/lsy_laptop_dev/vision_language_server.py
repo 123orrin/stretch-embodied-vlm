@@ -22,6 +22,7 @@ class VLServer(Node):
 
     def __init__(self):
         super().__init__('vision_language_server')
+        self.get_logger().info('Vision Language Server Node Initialized')
         self.srv = self.create_service(VLService, 'vision_language_client', self.vision_language_callback)
 
         self.openai_key = os.getenv('OPENAI_API_KEY')
