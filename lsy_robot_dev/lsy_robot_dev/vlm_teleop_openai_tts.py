@@ -1,4 +1,4 @@
-# MOST UP TO DATE CODE, 10-07-2024, 16:15
+# MOST UP TO DATE CODE, 18-07-2024, 
 
 from lsy_interfaces.srv import VLService
 import hello_helpers.hello_misc as hm
@@ -23,19 +23,18 @@ from control_msgs.action import FollowJointTrajectory
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 from std_msgs.msg import Int32
 
-# Set speaker and volume to activate the speakers
-os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo')
-os.system('amixer set Master 200%')
+###### Copy-pasted from is_speaking.py ######
+from action_msgs.msg import GoalStatus
+from action_msgs.msg import GoalStatusArray
+from std_msgs.msg import Bool
+#############################################
 
-class Prompt(Enum):
-    DESCRIBE = 0
-    MOVE = 1
+from geometry_msgs.msg import PointStamped
+from navigation.NavigateConceptGraph import *
 
-class GetVoiceCommands:
-    pass  
+os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
+os.system('amixer set Master 200%') # ZK added
 
-class VLClient(Node):
-    pass
 
 class VLMTeleop(hm.HelloNode):
 
@@ -58,156 +57,168 @@ class VLMTeleop(hm.HelloNode):
         self.tts_voice = 'alloy'
         self.tts_volume = 1.0
 
-        ## Previously in GetVoiceCommands init
         # Initialize the voice command
-        self.voice_command = ' '
+        self.voice_command = ' ' 
 
         # Initialize the sound direction
-        self.sound_direction = 0
+        self.sound_direction = 0 # not used?
 
         # Initialize subscribers
-        self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1)
+        self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
         self.sound_direction_sub = self.create_subscription(Int32, "/sound_direction", self.callback_direction, 1)
         self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
-
-        ## Previously in VLClient init
-        self.cli = self.create_client(VLService, 'vision_language_client')
-        while not self.cli.wait_for_service(timeout_sec=1.0):
-            print('service not available, waiting again')
-            #self.get_logger().info('service not available, waiting again...')
-        self.req = VLService.Request()
-        self.client_futures = []
-        self.future = None
-
+        # should we use the following instead of line above?
+        # self.joint_state_sub = self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
         self.image_sub = self.create_subscription(Image, 'camera/color/image_raw', self.image_callback, 1)
+        self.target_point_publisher = self.create_publisher(PointStamped, "/clicked_point", 1)
+
+        ###### Copy-pasted from is_speaking.py ######
+        self.robot_sound_sub = self.create_subscription(
+            GoalStatusArray, '~/robotsound', self.robot_sound_callback, 1)
+        self.is_speaking = False
+        self.pub_speech_flag = self.create_publisher(
+            Bool, '~/output/is_speaking', 1)
+        self.is_speaking_timer = self.create_timer(0.01, self.speech_timer_cb)
+        #############################################
+
+        # Initialize variables related to VLService
+        self.vl_cli = self.create_client(VLService, 'vision_language_client')
+        while not self.vl_cli.wait_for_service(timeout_sec=1.0):
+            print('VLService not available, waiting again')
+            #self.get_logger().info('service not available, waiting again...')
+        self.vl_req = VLService.Request()
+        self.vl_future = None
+
+        #self.user_prompt = None
         self.image = None
-        self.prompt = None
         self.result = None
-    
-    # Previously in GetVoiceCommands
+        #self.is_speaking = False  # initialize variable
+
+
+    ## Callback functions
     def callback_direction(self, msg):
         #self.sound_direction = msg.data * -self.rad_per_deg
         self.sound_direction = None
 
+    # def is_speaking_callback(self, msg):
+    #     self.is_speaking = msg.data
+    #     print('is_speeching msg.data (equiv. self.is_speaking): ', msg.data)
+    #     #if self.is_speaking:
+    #         #time.sleep(20)
+
+
     def callback_speech(self,msg):
-        self.voice_command = ' '.join(map(str,msg.transcript))
-        if self.voice_command != None:
-            self.get_logger().info(f'Voice Command: {self.voice_command}')
-
-
-    def get_inc(self):
-        inc = {'rad': self.rotate, 'translate': self.translate}
-        return inc
-
-    def print_commands(self):
-        """
-        A function that prints the voice teleoperation menu.
-        :param self: The self reference.
-        """
-        print('                                           ')
-        print('------------ VLM TELEOP MENU ------------')
-        print('                                           ')
-        print('               VOICE COMMANDS              ')
-        print(' "stretch describe": DESCRIBE SCENE        ')
-        print(' "stretch move [object]": MOVE TO OBJECT   ')
-        print('                                           ')
-        print('                                           ')
-        print(' "quit"   : QUIT AND CLOSE NODE            ')
-        print('                                           ')
-        print('-------------------------------------------')
-
-    def get_prompt(self):
-        prompt_type = None
-        prompt = None
-        # Move base forward command
-        if 'describe' in self.voice_command:
-            prompt_type = Prompt.DESCRIBE
-            prompt = 'Describe what you see in the image in a short sentence.'
-
-        # Move base back command
-        if 'move' in self.voice_command:
-            prompt_type = Prompt.MOVE
-            desired_obj = self.voice_command.split(' ')[-1]
-            prompt = f'Describe how to move from your current location to the {desired_obj}. Please answer by providing a comma separated array using only a combination of the words in the following list [forward, backward, left, right].'
-
-        # Rotate base right command
-        if self.voice_command == 'qwerty':
-            prompt = 'Please say potato'
-            #command = {'joint': 'rotate_mobile_base', 'inc': -self.get_inc()['rad']}
-
-        # Move base to sound direction command
-        if self.voice_command == 'werty':
-            prompt = 'Please say potato'
-            #command = {'joint': 'translate_mobile_base', 'inc': self.get_inc['translate']}
-
-        if self.voice_command == 'ertyu':
-            # Sends a signal to ros to shutdown the ROS interfaces
-            self.get_logger().info("done")
-
-            # Exit the Python interpreter
-            sys.exit(0)
-
-        # Reset voice command to None
-        self.voice_command = ' '
-
-        # return the updated command
-        return (prompt_type, prompt)
-    
-
-    # Previously in VLClient
+        if not self.is_speaking: # might be redundant with same logic that's now in get_preprompt
+            self.voice_command = ' '.join(map(str,msg.transcript))
+            if self.voice_command != None:
+                self.get_logger().info(f'Voice Command: {self.voice_command}')
+            
     def image_callback(self, msg):
         self.image = msg.data
         # print("W, H: ", msg.width, msg.height)
-
-    # def send_request(self, prompt):
-    #     self.req.image = self.image
-    #     self.req.prompt = prompt
-    #     self.future = self.cli.call_async(self.req)
-    #     return self.cli.call_async(self.req)
-    
-    def read_message(self):
-        self.get_logger().info(self.result)
-
-
-    # Original functions in VLMTeleop
-    def _dummy(self):
-        pass
-
+        
     def joint_states_callback(self, msg):
         self.joint_state = msg
 
-    def timer_get_prompt(self):
-        # Get voice command
-        prompt_type, prompt = self.get_prompt()
+    ###### Copy-pasted from is_speaking.py ######
+    def check_speak_status(self, status_msg):
+        """Returns True when speaking.
 
-        if prompt != None:
-            self.get_logger().info(f'Prompt: {prompt}')
-        # self.speaker.say('I am Hello Robot.')
-        # Send voice command for joint trajectory goals
-        self.process_prompt(prompt_type, prompt)
+        """
+        # If it is not included in the terminal state,
+        # it is determined as a speaking state.
+        if status_msg.status in [GoalStatus.STATUS_ACCEPTED,
+                                 GoalStatus.STATUS_EXECUTING]:
+            return True
+        return False
+
+    def robot_sound_callback(self, msg):
+        for status in msg.status_list:
+            if self.check_speak_status(status):
+                self.is_speaking = True
+                return
+        self.is_speaking = False
+
+    def speech_timer_cb(self):
+        self.pub_speech_flag.publish(
+            Bool(data=self.is_speaking))
+    #############################################
+
+    ## Miscellaneous helper functions 
+    def get_inc(self):
+        inc = {'rad': self.rotate, 'translate': self.translate}
+        return inc
+    
+    def read_message(self):
+        self.get_logger().info(self.result)
+    
+    
+    ## Retrieving and processing prompts
+    def get_preprompt(self):
+        #print('#######\nENTERED get_preprompt()\nself.is_speaking: ', self.is_speaking, '\nself.voice_command: ', self.voice_command, '\n#######')
+        if self.is_speaking:
+            return (None, None)
+        if self.voice_command == ' ':
+            return (None, None)
+        if 'stretch' not in self.voice_command:
+            return (None, None)
+
+        prompt_type = None
+        user_prompt = self.voice_command ## need to confirm that this is correct
+
+        print('Processing initial query')
+        query = 'You are given three categories: "move", "describe", "chat". From these three categories, output the one that best represents the prompt below. Make sure to use the exact same formatting as above, including keeping the words in lower case. In case of uncertainty, output "chat". \nPrompt: ' + user_prompt
+        # query = 'You are given three categories: "describe", "move", "chat". From these three categories, output the one that best represents the prompt below. If you output "chat", please also continue the conversation on a new line. In case of uncertainty, output "chat". /nPrompt: ' + self.user_prompt
+        print('Initial user_prompt: ', user_prompt)
+        self.vl_req.prompt = query
+        self.vl_req.image = self.image
+        self.vl_req.use_image = False
+        
+        self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
+        rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
+        print('Finished getting prompt type from VLM')
+        result = self.vl_cli_future.result()
+        prompt_type = result.result ## need to confirm that this is correct
+        self.get_logger().info(f'VLM result.result, aka prompt_type: {prompt_type}')
+        ## need to decide whether to keep preprompt as local var or revert to global (self.preprompt)
+        
+        # Reset voice command to None so that it's ready for next iteration of getting preprompt; OK to do this since we've already saved self.voice_command to user_prompt
+        self.voice_command = ' ' # not sure about the best location for this line
+        
+        return (prompt_type, user_prompt)
+
 
     def process_prompt(self, prompt_type, prompt):
         if prompt is None:
             return
 
-        print('Processing Prompt')
-        self.req.image = self.image
-        self.req.prompt = prompt
-        
-        self.future = self.cli.call_async(self.req)
-        rclpy.spin_until_future_complete(self, self.future) ########## HELLO, HI, I'M THE PROBLEM ITS ME
-        print('Finished getting VLM answer')
-        result = self.future.result()
-        self.get_logger().info(f'VLM Result: {result}')
-        
         joint_state = self.joint_state
 
-
-        if prompt_type == Prompt.DESCRIBE:
-            print('THIS IS WHAT I SEE')
+        # Add in later:
+        # if 'stretch shut down' in prompt:
+        #     self.get_logger().info('Received Shutdown Voice Command. Shutting Down Node...')
+        #     self.destroy_node()
+        #     rclpy.shutdown()
+        
+        if prompt_type == 'describe' or prompt_type == 'chat':
+            self.vl_req.image = self.image
+            self.vl_req.prompt = prompt
+            self.vl_req.use_image = True
+            #if prompt_type == 'describe':
+                #print('Mode: describe. Sending user prompt along with image to VLM')
+                #self.vl_req.use_image = True
+            #else:
+                #print('Mode: chat. Sending only user prompt to VLM')
+                #self.vl_req.use_image = False
+            self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
+            rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
+            print('Finished getting VLM answer')
+            vl_result = self.vl_cli_future.result()
+            self.get_logger().info(f'VLM Result: {vl_result}')
+            
             tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
                                                       voice=self.tts_voice,
-                                                      input=result.result,
+                                                      input=vl_result.result,
                                                       response_format="wav")
             # audio_result_path = "~/lsy_software_tests/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
             audio_result_path = "/home/hello-robot/lsy_software_tests/vlm_teleop_audio_output/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
@@ -216,55 +227,38 @@ class VLMTeleop(hm.HelloNode):
             print("Speaking should start now.")
             self.soundhandle.playWave(audio_result_path, self.tts_volume)
             print("Speaking should have ended now.")
+            
+        elif prompt_type == 'move' and joint_state is not None:
+            print('Made it into "move" elif statement.')
+            # print("Robot speaking should start now.")
+            # self.soundhandle.say("I have reached the target.", self.voice, self.volume)
+            # print("Robot speaking should have ended now.")
 
-        elif prompt_type == Prompt.MOVE and joint_state is not None:
-            result = result.result
-            words = result.split(', ')
-            print(f'Commands: {words}')
-            for command in words:
-                # Assign point as a JointTrajectoryPoint message prompt_type
-                point = JointTrajectoryPoint()
-                point.time_from_start = Duration(seconds=0).to_msg()
+            nav = NavigateConceptGraph(system_prompt_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/prompts/concept_graphs_planner.txt', scene_json_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/obj_json_r_mapping_stride13.json')
+            nav_query = prompt.lower().replace("stretch", "")
+            target_object, target_coords = nav.query_goal(query=nav_query, visual=False, excluded_ids=[])
 
-                # Assign trajectory_goal as a FollowJointTrajectoryGoal message prompt_type
-                trajectory_goal = FollowJointTrajectory.Goal()
-                trajectory_goal.goal_time_tolerance = Duration(seconds=0).to_msg()
+            print(target_object)
+            print(target_coords)
 
-                # Extract the joint name from the command dictionary
-                print(f'Command: {command}')
-                if command == 'forward':
-                    joint_name = 'translate_mobile_base'
-                    inc = self.translate
-                elif command == 'backward':
-                    joint_name = 'translate_mobile_base'
-                    inc = -self.translate
-                elif command == 'right':
-                    joint_name = 'rotate_mobile_base'
-                    inc = self.rotate
-                elif command == 'left':
-                    joint_name = 'rotate_mobile_base'
-                    inc = -self.rotate
+            if target_object['object_id'] != -1:
 
-                trajectory_goal.trajectory.joint_names = [joint_name]
-                new_value = inc
+                msg = PointStamped()
+                msg.header.frame_id = '/base_link'
 
-                # Assign the new_value position to the trajectory goal message prompt_type
-                point.positions = [new_value]
-                trajectory_goal.trajectory.points = [point]
-                trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
-                #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
-                # Make the action call and send goal of the new joint position
-                self.trajectory_client.send_goal_async(trajectory_goal)
-                print('test')
-                time.sleep(5)
-                self.get_logger().info('Done sending command.')
-            self.get_logger().info('Finished Moving to Desired Object')
+                msg.point.x = target_coords[0]
+                msg.point.y = target_coords[1]
+                msg.point.z = target_coords[2]
 
+                self.target_point_publisher.publish(msg)
+
+
+    ## Node main
     def main(self):
         while rclpy.ok():
             rclpy.spin_once(self)
-            prompt_type, prompt = self.get_prompt()
-            self.process_prompt(prompt_type, prompt)            
+            prompt_type, prompt = self.get_preprompt()
+            self.process_prompt(prompt_type, prompt)  
 
 
 def main(args=None):
