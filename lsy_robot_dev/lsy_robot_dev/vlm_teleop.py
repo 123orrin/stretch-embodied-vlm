@@ -28,8 +28,15 @@ from action_msgs.msg import GoalStatusArray
 from std_msgs.msg import Bool
 #############################################
 
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped, PoseStamped, Twist
 from navigation.NavigateConceptGraph import *
+from stretch_nav2.robot_navigator import BasicNavigator, TaskResult
+
+from tf2_ros import TransformException
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+
+from copy import deepcopy
 
 os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
 os.system('amixer set Master 200%') # ZK added
@@ -66,6 +73,7 @@ class VLMTeleop(hm.HelloNode):
         # self.joint_state_sub = self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
         self.image_sub = self.create_subscription(Image, 'camera/color/image_raw', self.image_callback, 1)
         self.target_point_publisher = self.create_publisher(PointStamped, "/clicked_point", 1)
+        self.twist_pub = self.create_publisher(Twist, '/stretch/cmd_vel', 1)
 
         ###### Copy-pasted from is_speaking.py ######
         self.robot_sound_sub = self.create_subscription(
@@ -75,6 +83,9 @@ class VLMTeleop(hm.HelloNode):
             Bool, '~/output/is_speaking', 1)
         self.is_speaking_timer = self.create_timer(0.01, self.speech_timer_cb)
         #############################################
+
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
 
         # Initialize variables related to VLService
         self.vl_cli = self.create_client(VLService, 'vision_language_client')
@@ -199,12 +210,12 @@ class VLMTeleop(hm.HelloNode):
             self.vl_req.image = self.image
             self.vl_req.prompt = prompt
             self.vl_req.use_image = True
-            #if prompt_type == 'describe':
-                #print('Mode: describe. Sending user prompt along with image to VLM')
-                #self.vl_req.use_image = True
-            #else:
-                #print('Mode: chat. Sending only user prompt to VLM')
-                #self.vl_req.use_image = False
+            if prompt_type == 'describe':
+                print('Mode: describe. Sending user prompt along with image to VLM')
+                self.vl_req.use_image = True
+            else:
+                print('Mode: chat. Sending only user prompt to VLM')
+                self.vl_req.use_image = False
             self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
             rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
             print('Finished getting VLM answer')
@@ -223,16 +234,132 @@ class VLMTeleop(hm.HelloNode):
             # self.soundhandle.say("I have reached the target.", self.voice, self.volume)
             # print("Robot speaking should have ended now.")
 
-            nav = NavigateConceptGraph(system_prompt_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/prompts/concept_graphs_planner.txt', scene_json_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/obj_json_r_mapping_stride13.json')
+            nav = NavigateConceptGraph(system_prompt_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/prompts/concept_graphs_planner.txt', scene_json_path='/home/hello-robot/ament_ws/src/lsy_robot_dev/lsy_robot_dev/navigation/obj_json_r_mapping_stride14.json')
             nav_query = prompt.lower().replace("stretch", "")
             target_object, target_coords = nav.query_goal(query=nav_query, visual=False, excluded_ids=[])
 
             print(target_object)
             print(target_coords)
+            
 
             if target_object['object_id'] != -1:
 
-                msg = PointStamped()
+                from_frame_rel = 'odom'
+                to_frame_rel = 'map'
+
+                try:
+                    t = self.tf_buffer.lookup_transform(
+                        to_frame_rel,
+                        from_frame_rel,
+                        rclpy.time.Time())
+
+                    theta = math.atan2(target_coords[1] - t.transform.translation.y, target_coords[0] - t.transform.translation.x)
+                    lin = math.sqrt((target_coords[1] - t.transform.translation.y)**2 + (target_coords[0] - t.transform.translation.x)**2)
+                    
+                    # twist = Twist()
+                    # vel = 0.5
+                    # t = theta/vel
+                    # twist.angular.z = vel
+                    # self.twist_pub.publish(twist)
+                    # start = time.time()
+                    # while time.time() - start < t:
+                    #     pass
+                    # twist.angular.z = 0.
+                    # self.twist_pub.publish(twist)
+
+                    # t = lin/vel
+                    # twist.linear.y = vel
+                    # self.twist_pub.publish(twist)
+                    # start = time.time()
+                    # while time.time() - start < t:
+                    #     pass
+                    # twist.linear.y = 0
+                    # self.twist_pub.publish(twist)   
+
+                    # Assign point as a JointTrajectoryPoint message prompt_type
+                    point = JointTrajectoryPoint()
+                    point.time_from_start = Duration(seconds=0).to_msg()
+
+                    # Assign trajectory_goal as a FollowJointTrajectoryGoal message prompt_type
+                    trajectory_goal = FollowJointTrajectory.Goal()
+                    trajectory_goal.goal_time_tolerance = Duration(seconds=0).to_msg()
+
+                    joint_name = 'rotate_mobile_base'
+                    inc = theta + math.pi/2
+
+                    trajectory_goal.trajectory.joint_names = [joint_name]
+                    new_value = inc
+                    # Assign the new_value position to the trajectory goal message prompt_type
+                    point.positions = [new_value]
+                    trajectory_goal.trajectory.points = [point]
+                    trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
+                    #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
+                    # Make the action call and send goal of the new joint position
+                    self.trajectory_client.send_goal_async(trajectory_goal)
+                    time.sleep(5)
+                    print('I HAVE TURNED')
+
+                    joint_name = 'translate_mobile_base'
+                    inc = lin
+                    trajectory_goal.trajectory.joint_names = [joint_name]
+                    new_value = inc
+                    # Assign the new_value position to the trajectory goal message prompt_type
+                    point.positions = [new_value]
+                    trajectory_goal.trajectory.points = [point]
+                    trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
+                    #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
+                    # Make the action call and send goal of the new joint position
+                    self.trajectory_client.send_goal_async(trajectory_goal)
+                    time.sleep(5)
+                    print('I HAVE FORWARDED MYSELF')
+                    self.get_logger().info('Finished Moving to Desired Object')    
+                
+                except TransformException as ex:
+                    self.get_logger().info(
+                        f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')     
+                    
+                """"
+                navigator = BasicNavigator()
+
+                initial_pose = PoseStamped()
+                initial_pose.header.frame_id = 'map'
+                initial_pose.header.stamp = navigator.get_clock().now().to_msg()
+                initial_pose.pose.position.x = 0.0
+                initial_pose.pose.position.y = 0.0
+                initial_pose.pose.orientation.z = 0.0
+                initial_pose.pose.orientation.w = 1.0
+                navigator.setInitialPose(initial_pose)
+
+                navigator.waitUntilNav2Active()
+
+                route_poses = []
+                pose = PoseStamped()
+                pose.header.frame_id = 'map'
+                pose.header.stamp = navigator.get_clock().now().to_msg()
+                pose.pose.orientation.w = 1.0
+                
+                pose.pose.position.x = target_coords[0]
+                pose.pose.position.y = target_coords[1]
+                route_poses.append(deepcopy(pose))
+
+                navigator.followWaypoints(route_poses)
+
+                while not navigator.isTaskComplete():
+                    i += 1
+                    feedback = navigator.getFeedback()
+                    if feedback and i % 5 == 0:
+                        navigator.get_logger().info('Executing current waypoint: ' +
+                            str(feedback.current_waypoint + 1) + '/' + str(len(route_poses)))
+                        
+                result = navigator.getResult()
+                if result == TaskResult.SUCCEEDED:
+                    navigator.get_logger().info('Route complete!')
+                elif result == TaskResult.CANCELED:
+                    navigator.get_logger().info('Security route was canceled, exiting.')
+                elif result == TaskResult.FAILED:
+                    navigator.get_logger().info('Security route failed!')
+
+                '''msg = PointStamped()
                 msg.header.frame_id = '/base_link'
 
                 msg.point.x = target_coords[0]
@@ -240,7 +367,9 @@ class VLMTeleop(hm.HelloNode):
                 msg.point.z = target_coords[2]
 
                 self.target_point_publisher.publish(msg)
+                '''
 
+                """
 
     ## Node main
     def main(self):
