@@ -30,8 +30,9 @@ class VLServer(Node):
         self.model_id = "gpt-4o-mini"  # using gpt-4o-mini because according to OpenAI, it is cheaper and faster than gpt-3.5-turbo as of July 2024
         # self.model_id_vision = "gpt-4o-mini-2024-07-18"
         # self.model_id_chat = "gpt-3.5-turbo-0125"
+        self.messages = [] # for the purpose of message history
         self.openai_vision_detail = "low"  # can also be set to: "high" or "auto", but "high" is more expensive
-
+        
         self.image_path = '/home/hornywombat/stretch-images-vlmteleop/vlm_teleop_image.jpeg'
 
         self.sub = self.create_subscription(PointStamped, '/clicked_point', self.a, 1)
@@ -46,7 +47,13 @@ class VLServer(Node):
         # return base64.b64encode(image).decode('utf-8')
 
     def vision_language_callback(self, request, response):
-        if request.use_image:
+        print(self.messages)
+        print(request.is_preprompt)
+        if (request.is_preprompt and len(self.messages) >= 20):
+                self.messages.pop(0) # remove 0th element
+                self.messages.pop(1) # remove reply to prev element
+        
+        if request.use_image and not request.is_preprompt:
             image = np.array(request.image).reshape(720, 1280, 3)
             image = np.rot90(image, 3)
             image = PIL_Image.fromarray(image)
@@ -60,7 +67,7 @@ class VLServer(Node):
             "Authorization": f"Bearer {self.openai_key}"
             }
 
-            payload = {
+            """payload = {
             "model": self.model_id,
             "messages": [
                 {
@@ -81,6 +88,29 @@ class VLServer(Node):
                 }
             ],
             "max_tokens": 300
+            }"""
+            
+            self.messages.append({
+                "role": "user",
+                "content": [
+                    {
+                    "type": "text",
+                    "text": f"{request.prompt}. Respond in less than 40 words."
+                    },
+                    {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}",
+                        "detail": self.openai_vision_detail
+                    }
+                    }
+                ]
+                })
+            
+            payload = {
+            "model": self.model_id,
+            "messages": self.messages,
+            #"max_tokens": 300
             }
 
             completion = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
@@ -100,18 +130,26 @@ class VLServer(Node):
 
         
         else:
-            completion = self.openai_client.chat.completions.create(
+            if not request.is_preprompt:
+                self.messages.append({"role": "user", "content": f"{request.prompt}. Respond in less than 20 words."})
+                completion = self.openai_client.chat.completions.create(
                             model=self.model_id,
-                            messages=[
-                                #{"role": "system", "content": "You are a helpful assistant."},
-                                {"role": "user", "content": f"{request.prompt}. Respond in less than 20 words."}
-                            ]
+                            messages=self.messages
+                            )
+            else:
+                completion = self.openai_client.chat.completions.create(
+                            model=self.model_id,
+                            messages=[{"role": "user", "content": f"{request.prompt}. Respond in less than 20 words."}]
                             )
             
             print('completion.choices[0].message', completion.choices[0].message)
             print('completion.choices[0].message.content', completion.choices[0].message.content)
             completion_message_content = completion.choices[0].message.content
+            
         
+        if not request.is_preprompt:
+            self.messages.append({"role": "assistant", "content": completion_message_content})
+
         response.result = completion_message_content
             
         return response
