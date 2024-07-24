@@ -175,8 +175,9 @@ class VLMTeleop(hm.HelloNode):
         user_prompt = self.voice_command ## need to confirm that this is correct
 
         print('Processing initial query')
-        query = 'You are given three categories: "move", "describe", "chat". From these three categories, output the one that best represents the prompt below. Make sure to use the exact same formatting as above, including keeping the words in lower case. In case of uncertainty, output "chat". \nPrompt: ' + user_prompt
+        # query = 'You are given three categories: "move", "describe", "chat". From these three categories, output the one that best represents the prompt below. Make sure to use the exact same formatting as above, including keeping the words in lower case. In case of uncertainty, output "chat". \nPrompt: ' + user_prompt
         # query = 'You are given three categories: "describe", "move", "chat". From these three categories, output the one that best represents the prompt below. If you output "chat", please also continue the conversation on a new line. In case of uncertainty, output "chat". /nPrompt: ' + self.user_prompt
+        query = 'You are given three categories: "move", "describe", "chat". From these three categories, output the one that best represents the prompt below. Make sure to use the exact same formatting as above, including keeping the words in lower case. In case of uncertainty, output "chat". In addition, output "True" or "False" if you think the prompt below requires you to receive an image to be able to best answer the prompt. If you don\'t have the information required to answer the prompt without an image because your training data was cutoff before that date or because you do not have access to real-time data, you should always output "True". Your final output should be in the following format, substituting prompt_type for "move", "describe", "chat", and substituting use_image for "True", "False": prompt_type,use_image \nPrompt: ' + user_prompt
         print('Initial user_prompt: ', user_prompt)
         self.vl_req.prompt = query
         self.vl_req.image = self.image
@@ -187,8 +188,10 @@ class VLMTeleop(hm.HelloNode):
         rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
         print('Finished getting prompt type from VLM')
         result = self.vl_cli_future.result()
-        prompt_type = result.result ## need to confirm that this is correct
-        self.get_logger().info(f'VLM result.result, aka prompt_type: {prompt_type}')
+        preprompt_result = result.result.split(',')
+        prompt_type = preprompt_result[0]
+        self.vl_req.use_image = True if "True" in preprompt_result[1] else False
+        self.get_logger().info(f'VLM result.result, aka prompt_type,use_image: {prompt_type, self.vl_req.use_image}')
         ## need to decide whether to keep preprompt as local var or revert to global (self.preprompt)
         
         # Reset voice command to None so that it's ready for next iteration of getting preprompt; OK to do this since we've already saved self.voice_command to user_prompt
@@ -214,12 +217,19 @@ class VLMTeleop(hm.HelloNode):
             self.vl_req.image = self.image
             self.vl_req.prompt = prompt
 
+            """
             if prompt_type == 'describe':
                 print('Mode: describe. Sending user prompt along with image to VLM')
                 self.vl_req.use_image = True
             else:
                 print('Mode: chat. Sending only user prompt to VLM')
                 self.vl_req.use_image = False
+            """
+            if self.vl_req.use_image:
+                print('Mode: send image. Sending user prompt along with image to VLM')
+            else:
+                print('Mode: don\'t send image. Sending only user prompt to VLM')
+
             self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
             rclpy.spin_until_future_complete(self, self.vl_cli_future) ########## HELLO, HI, I'M THE PROBLEM ITS ME (OLD PROBLEM)
             print('Finished getting VLM answer')
