@@ -1,4 +1,65 @@
-from lsy_interfaces.srv import VLService
+from lsy_interfaces.srv import StretchSpeechService
+
+import rclpy
+from rclpy.node import Node
+
+import os
+from sound_play.libsoundplay import SoundClient
+from sound_play_msgs.msg import SoundRequest
+from openai import OpenAI
+
+os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
+os.system('amixer set Master 200%') # ZK added
+
+class StretchSpeechServer(Node):
+
+    def __init__(self):
+        super().__init__('stretch_speech_service')
+        self.get_logger().info('StretchSpeechServer Node Initialized')
+        self.srv = self.create_service(StretchSpeechService, 'stretch_speech_client', self.stretch_speech_callback)
+        
+        self.soundhandle = SoundClient(self, blocking=True)
+        self.openai_key = os.getenv('OPENAI_API_KEY')
+        self.openai_client = OpenAI(api_key=self.openai_key)
+        self.tts_model = 'tts-1'
+        self.tts_voice = 'alloy'
+        self.tts_volume = 1.0
+        
+        self.audio_result_path = '/home/hello-robot/lsy_software_tests/vlm_teleop_audio_output/vlm_teleop_openai_tts.wav' # must be .WAV or .OGG
+
+
+    def stretch_speech_callback(self, request, response):
+        try:
+            print(request.llm_response_text)
+            tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
+                                                        voice=self.tts_voice,
+                                                        input=request.llm_response_text,
+                                                        response_format="wav")
+            tts_response.write_to_file(self.audio_result_path)
+            print("File should be saved now.")
+            print("Speaking should start now.")
+            self.soundhandle.playWave(self.audio_result_path, self.tts_volume)
+            print("Speaking should have ended now.")
+            response.tts_processed = True
+
+        except:
+            response.tts_processed = False
+            print('An exception occured.')
+
+        return response
+
+
+def main():
+    rclpy.init()
+    stretch_speech_service = StretchSpeechServer
+    rclpy.spin(stretch_speech_service)
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
+##########################################################################################
+
 import hello_helpers.hello_misc as hm
 
 import os
@@ -21,138 +82,8 @@ from control_msgs.action import FollowJointTrajectory
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 from std_msgs.msg import Int32
 
-from geometry_msgs.msg import PointStamped, PoseStamped, Twist
-from navigation.NavigateConceptGraph import *
-from stretch_nav2.robot_navigator import BasicNavigator, TaskResult
-
-from tf2_ros import TransformException
-from tf2_ros.buffer import Buffer
-from tf2_ros.transform_listener import TransformListener
-
-from copy import deepcopy
-
-# os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
-# os.system('amixer set Master 200%') # ZK added
-
-################################ FOR MICROPHONE USAGE ################################
-import builtins  # noqa: E402, I100
-
-import rosidl_parser.definition  # noqa: E402, I100
-
-
-class Metaclass_String(type):
-    """Metaclass of message 'String'."""
-
-    _CREATE_ROS_MESSAGE = None
-    _CONVERT_FROM_PY = None
-    _CONVERT_TO_PY = None
-    _DESTROY_ROS_MESSAGE = None
-    _TYPE_SUPPORT = None
-
-    __constants = {
-    }
-
-    @classmethod
-    def __import_type_support__(cls):
-        try:
-            from rosidl_generator_py import import_type_support
-            module = import_type_support('std_msgs')
-        except ImportError:
-            import logging
-            import traceback
-            logger = logging.getLogger(
-                'std_msgs.msg.String')
-            logger.debug(
-                'Failed to import needed modules for type support:\n' +
-                traceback.format_exc())
-        else:
-            cls._CREATE_ROS_MESSAGE = module.create_ros_message_msg__msg__string
-            cls._CONVERT_FROM_PY = module.convert_from_py_msg__msg__string
-            cls._CONVERT_TO_PY = module.convert_to_py_msg__msg__string
-            cls._TYPE_SUPPORT = module.type_support_msg__msg__string
-            cls._DESTROY_ROS_MESSAGE = module.destroy_ros_message_msg__msg__string
-
-    @classmethod
-    def __prepare__(cls, name, bases, **kwargs):
-        # list constant names here so that they appear in the help text of
-        # the message class under "Data and other attributes defined here:"
-        # as well as populate each message instance
-        return {
-        }
-
-
-class String(metaclass=Metaclass_String):
-    """Message class 'String'."""
-
-    __slots__ = [
-        '_data',
-    ]
-
-    _fields_and_field_types = {
-        'data': 'string',
-    }
-
-    SLOT_TYPES = (
-        rosidl_parser.definition.UnboundedString(),  # noqa: E501
-    )
-
-    def __init__(self, **kwargs):
-        assert all('_' + key in self.__slots__ for key in kwargs.keys()), \
-            'Invalid arguments passed to constructor: %s' % \
-            ', '.join(sorted(k for k in kwargs.keys() if '_' + k not in self.__slots__))
-        self.data = kwargs.get('data', str())
-
-    def __repr__(self):
-        typename = self.__class__.__module__.split('.')
-        typename.pop()
-        typename.append(self.__class__.__name__)
-        args = []
-        for s, t in zip(self.__slots__, self.SLOT_TYPES):
-            field = getattr(self, s)
-            fieldstr = repr(field)
-            # We use Python array type for fields that can be directly stored
-            # in them, and "normal" sequences for everything else.  If it is
-            # a type that we store in an array, strip off the 'array' portion.
-            if (
-                isinstance(t, rosidl_parser.definition.AbstractSequence) and
-                isinstance(t.value_type, rosidl_parser.definition.BasicType) and
-                t.value_type.typename in ['float', 'double', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32', 'int64', 'uint64']
-            ):
-                if len(field) == 0:
-                    fieldstr = '[]'
-                else:
-                    assert fieldstr.startswith('array(')
-                    prefix = "array('X', "
-                    suffix = ')'
-                    fieldstr = fieldstr[len(prefix):-len(suffix)]
-            args.append(s[1:] + '=' + fieldstr)
-        return '%s(%s)' % ('.'.join(typename), ', '.join(args))
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        if self.data != other.data:
-            return False
-        return True
-
-    @classmethod
-    def get_fields_and_field_types(cls):
-        from copy import copy
-        return copy(cls._fields_and_field_types)
-
-    @builtins.property
-    def data(self):
-        """Message field 'data'."""
-        return self._data
-
-    @data.setter
-    def data(self, value):
-        if __debug__:
-            assert \
-                isinstance(value, str), \
-                "The 'data' field must be of type 'str'"
-        self._data = value
-################################################################################
+os.system('pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo') # ZK added
+os.system('amixer set Master 200%') # ZK added
 
 class VLMTeleop(hm.HelloNode):
 
@@ -164,28 +95,41 @@ class VLMTeleop(hm.HelloNode):
         self.joint_state = None
 
         self.rad_per_deg = math.pi/180.0
+        # self.rotate = 20 * self.rad_per_deg # radians
+        # self.translate = 0.05 # meters
 
         self.soundhandle = SoundClient(self, blocking=True)
         self.openai_key = os.getenv('OPENAI_API_KEY')
+        # print("openai_key: ", self.openai_key)
         self.openai_client = OpenAI(api_key=self.openai_key)
         self.tts_model = 'tts-1'
         self.tts_voice = 'alloy'
         self.tts_volume = 1.0
 
-        # Initialize the voice command, image, and result
-        self.voice_command = ' '  # used in callback_speech
-        self.image = None  # used in image_callback
-        self.result = None  # used in read_message --> not needed? remove if not
+        # Initialize the voice command
+        self.voice_command = ' ' 
 
-        # Initialize subscribers and publishers
-        # self.speech_to_text_sub = self.create_subscription(String, "/yayayay", self.callback_speech, 1) # look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
-        self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
+        # Initialize the sound direction
+        self.sound_direction = 0 # not used?
 
+        # Initialize subscribers
+        self.speech_to_text_sub = self.create_subscription(String, "/yayayay", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
+        # self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
+
+        self.sound_direction_sub = self.create_subscription(Int32, "/sound_direction", self.callback_direction, 1)
         self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
         # should we use the following instead of line above?
         # self.joint_state_sub = self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
         self.image_sub = self.create_subscription(Image, 'camera/color/image_raw', self.image_callback, 1)
         self.target_point_publisher = self.create_publisher(PointStamped, "/clicked_point", 1)
+
+        ###### Copy-pasted from is_speaking.py ######
+        self.robot_sound_sub = self.create_subscription(GoalStatusArray, '~/robotsound', self.robot_sound_callback, 1)
+        self.is_speaking = False
+        self.pub_speech_flag = self.create_publisher(
+            Bool, '~/output/is_speaking', 1)
+        self.is_speaking_timer = self.create_timer(0.01, self.speech_timer_cb)
+        #############################################
 
         # Initialize variables related to VLService
         self.vl_cli = self.create_client(VLService, 'vision_language_client')
@@ -195,13 +139,31 @@ class VLMTeleop(hm.HelloNode):
         self.vl_req = VLService.Request()
         self.vl_future = None
 
+        #self.user_prompt = None
+        self.image = None
+        self.result = None
+        #self.is_speaking = False  # initialize variable
+
 
     ## Callback functions
-    def callback_speech(self,msg):
-        self.voice_command = msg.data
+    def callback_direction(self, msg):
+        #self.sound_direction = msg.data * -self.rad_per_deg
+        self.sound_direction = None
 
-        if self.voice_command != None:
-            self.get_logger().info(f'Voice Command: {self.voice_command}')
+    # def is_speaking_callback(self, msg):
+    #     self.is_speaking = msg.data
+    #     print('is_speeching msg.data (equiv. self.is_speaking): ', msg.data)
+    #     #if self.is_speaking:
+    #         #time.sleep(20)
+
+
+    def callback_speech(self,msg):
+        if not self.is_speaking: # might be redundant with same logic that's now in get_preprompt
+            # self.voice_command = ' '.join(map(str,msg.transcript))
+            self.voice_command = msg.data
+
+            if self.voice_command != None:
+                self.get_logger().info(f'Voice Command: {self.voice_command}')
             
     def image_callback(self, msg):
         self.image = msg.data
@@ -210,18 +172,45 @@ class VLMTeleop(hm.HelloNode):
     def joint_states_callback(self, msg):
         self.joint_state = msg
 
+    ###### Copy-pasted from is_speaking.py ######
+    def check_speak_status(self, status_msg):
+        """Returns True when speaking.
+
+        """
+        # If it is not included in the terminal state,
+        # it is determined as a speaking state.
+        if status_msg.status in [GoalStatus.STATUS_ACCEPTED,
+                                 GoalStatus.STATUS_EXECUTING]:
+            return True
+        return False
+
+    def robot_sound_callback(self, msg):
+        for status in msg.status_list:
+            if self.check_speak_status(status):
+                self.is_speaking = True
+                return
+        self.is_speaking = False
+
+    def speech_timer_cb(self):
+        self.pub_speech_flag.publish(
+            Bool(data=self.is_speaking))
+    #############################################
 
     ## Miscellaneous helper functions 
     def get_inc(self):
         inc = {'rad': self.rotate, 'translate': self.translate}
         return inc
     
-    def read_message(self):  # not used? remove if not
+    
+    def read_message(self):
         self.get_logger().info(self.result)
     
     
     ## Retrieving and processing prompts
     def get_preprompt(self):
+        #print('#######\nENTERED get_preprompt()\nself.is_speaking: ', self.is_speaking, '\nself.voice_command: ', self.voice_command, '\n#######')
+        if self.is_speaking:
+            return (None, None)
         if self.voice_command == ' ':
             return (None, None)
         if 'amy' not in self.voice_command.lower():
@@ -260,6 +249,7 @@ class VLMTeleop(hm.HelloNode):
         if prompt is None:
             return
 
+
         joint_state = self.joint_state
 
         # Add in later:
@@ -272,6 +262,14 @@ class VLMTeleop(hm.HelloNode):
             self.vl_req.image = self.image
             self.vl_req.prompt = prompt
 
+            """
+            if prompt_type == 'describe':
+                print('Mode: describe. Sending user prompt along with image to VLM')
+                self.vl_req.use_image = True
+            else:
+                print('Mode: chat. Sending only user prompt to VLM')
+                self.vl_req.use_image = False
+            """
             if self.vl_req.use_image:
                 print('Mode: send image. Sending user prompt along with image to VLM')
             else:
@@ -283,16 +281,15 @@ class VLMTeleop(hm.HelloNode):
             vl_result = self.vl_cli_future.result()
             self.get_logger().info(f'VLM Result: {vl_result}')
             
-            ## INSERT DATA FLOW TO ROBOT
             tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
                                                       voice=self.tts_voice,
                                                       input=vl_result.result,
                                                       response_format="wav")
-            audio_result_path = "/home/hornywombat/lsy_audio_data/vlm_teleop_audio_output/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
+            audio_result_path = "/home/hello-robot/lsy_software_tests/vlm_teleop_audio_output/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
             tts_response.write_to_file(audio_result_path)
             print("File should be saved now.")
             print("Speaking should start now.")
-            self.soundhandle.playWave(audio_result_path, self.tts_volume)  # based on the way this code is currently structured, this should play on the laptop 
+            self.soundhandle.playWave(audio_result_path, self.tts_volume)
             print("Speaking should have ended now.")
             
         elif prompt_type == 'move' and joint_state is not None:
