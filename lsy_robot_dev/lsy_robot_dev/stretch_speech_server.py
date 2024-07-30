@@ -29,29 +29,29 @@ class StretchSpeechServer(Node):
 
 
     def stretch_speech_callback(self, request, response):
-        try:
-            print(request.llm_response_text)
-            tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
-                                                        voice=self.tts_voice,
-                                                        input=request.llm_response_text,
-                                                        response_format="wav")
-            tts_response.write_to_file(self.audio_result_path)
-            print("File should be saved now.")
-            print("Speaking should start now.")
-            self.soundhandle.playWave(self.audio_result_path, self.tts_volume)
-            print("Speaking should have ended now.")
-            response.tts_processed = True
+    #try:
+        print(request.llm_response_text)
+        tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
+                                                    voice=self.tts_voice,
+                                                    input=request.llm_response_text,
+                                                    response_format="wav")
+        tts_response.write_to_file(self.audio_result_path)
+        print("File should be saved now.")
+        print("Speaking should start now.")
+        self.soundhandle.playWave(self.audio_result_path, self.tts_volume)
+        print("Speaking should have ended now.")
+        response.tts_processed = True
 
-        except:
-            response.tts_processed = False
-            print('An exception occured.')
+    #except:
+        response.tts_processed = False
+        print('An exception occured.')
 
         return response
 
 
 def main():
     rclpy.init()
-    stretch_speech_service = StretchSpeechServer
+    stretch_speech_service = StretchSpeechServer()
     rclpy.spin(stretch_speech_service)
     rclpy.shutdown()
 
