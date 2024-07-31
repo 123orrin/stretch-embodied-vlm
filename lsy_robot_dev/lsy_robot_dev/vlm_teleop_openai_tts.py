@@ -4,7 +4,7 @@ import hello_helpers.hello_misc as hm
 import os
 from sound_play.libsoundplay import SoundClient
 from sound_play_msgs.msg import SoundRequest
-from openai import OpenAI #### ZK added, OpenAI is installed globally
+#from openai import OpenAI #### ZK added, OpenAI is installed globally
 
 import rclpy
 from rclpy.node import Node
@@ -19,7 +19,7 @@ from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectoryPoint
 from control_msgs.action import FollowJointTrajectory
 from speech_recognition_msgs.msg import SpeechRecognitionCandidates
-from std_msgs.msg import Int32
+from std_msgs.msg import Int32, String
 
 ###### Copy-pasted from is_speaking.py ######
 from action_msgs.msg import GoalStatus
@@ -42,133 +42,123 @@ os.system('amixer set Master 200%') # ZK added
 
 
 
+# import builtins  # noqa: E402, I100
+
+# import rosidl_parser.definition  # noqa: E402, I100
 
 
+# class Metaclass_String(type):
+#     """Metaclass of message 'String'."""
 
-import builtins  # noqa: E402, I100
+#     _CREATE_ROS_MESSAGE = None
+#     _CONVERT_FROM_PY = None
+#     _CONVERT_TO_PY = None
+#     _DESTROY_ROS_MESSAGE = None
+#     _TYPE_SUPPORT = None
 
-import rosidl_parser.definition  # noqa: E402, I100
+#     __constants = {
+#     }
 
+#     @classmethod
+#     def __import_type_support__(cls):
+#         try:
+#             from rosidl_generator_py import import_type_support
+#             module = import_type_support('std_msgs')
+#         except ImportError:
+#             import logging
+#             import traceback
+#             logger = logging.getLogger(
+#                 'std_msgs.msg.String')
+#             logger.debug(
+#                 'Failed to import needed modules for type support:\n' +
+#                 traceback.format_exc())
+#         else:
+#             cls._CREATE_ROS_MESSAGE = module.create_ros_message_msg__msg__string
+#             cls._CONVERT_FROM_PY = module.convert_from_py_msg__msg__string
+#             cls._CONVERT_TO_PY = module.convert_to_py_msg__msg__string
+#             cls._TYPE_SUPPORT = module.type_support_msg__msg__string
+#             cls._DESTROY_ROS_MESSAGE = module.destroy_ros_message_msg__msg__string
 
-class Metaclass_String(type):
-    """Metaclass of message 'String'."""
-
-    _CREATE_ROS_MESSAGE = None
-    _CONVERT_FROM_PY = None
-    _CONVERT_TO_PY = None
-    _DESTROY_ROS_MESSAGE = None
-    _TYPE_SUPPORT = None
-
-    __constants = {
-    }
-
-    @classmethod
-    def __import_type_support__(cls):
-        try:
-            from rosidl_generator_py import import_type_support
-            module = import_type_support('std_msgs')
-        except ImportError:
-            import logging
-            import traceback
-            logger = logging.getLogger(
-                'std_msgs.msg.String')
-            logger.debug(
-                'Failed to import needed modules for type support:\n' +
-                traceback.format_exc())
-        else:
-            cls._CREATE_ROS_MESSAGE = module.create_ros_message_msg__msg__string
-            cls._CONVERT_FROM_PY = module.convert_from_py_msg__msg__string
-            cls._CONVERT_TO_PY = module.convert_to_py_msg__msg__string
-            cls._TYPE_SUPPORT = module.type_support_msg__msg__string
-            cls._DESTROY_ROS_MESSAGE = module.destroy_ros_message_msg__msg__string
-
-    @classmethod
-    def __prepare__(cls, name, bases, **kwargs):
-        # list constant names here so that they appear in the help text of
-        # the message class under "Data and other attributes defined here:"
-        # as well as populate each message instance
-        return {
-        }
+#     @classmethod
+#     def __prepare__(cls, name, bases, **kwargs):
+#         # list constant names here so that they appear in the help text of
+#         # the message class under "Data and other attributes defined here:"
+#         # as well as populate each message instance
+#         return {
+#         }
 
 
-class String(metaclass=Metaclass_String):
-    """Message class 'String'."""
+# class String(metaclass=Metaclass_String):
+#     """Message class 'String'."""
 
-    __slots__ = [
-        '_data',
-    ]
+#     __slots__ = [
+#         '_data',
+#     ]
 
-    _fields_and_field_types = {
-        'data': 'string',
-    }
+#     _fields_and_field_types = {
+#         'data': 'string',
+#     }
 
-    SLOT_TYPES = (
-        rosidl_parser.definition.UnboundedString(),  # noqa: E501
-    )
+#     SLOT_TYPES = (
+#         rosidl_parser.definition.UnboundedString(),  # noqa: E501
+#     )
 
-    def __init__(self, **kwargs):
-        assert all('_' + key in self.__slots__ for key in kwargs.keys()), \
-            'Invalid arguments passed to constructor: %s' % \
-            ', '.join(sorted(k for k in kwargs.keys() if '_' + k not in self.__slots__))
-        self.data = kwargs.get('data', str())
+#     def __init__(self, **kwargs):
+#         assert all('_' + key in self.__slots__ for key in kwargs.keys()), \
+#             'Invalid arguments passed to constructor: %s' % \
+#             ', '.join(sorted(k for k in kwargs.keys() if '_' + k not in self.__slots__))
+#         self.data = kwargs.get('data', str())
 
-    def __repr__(self):
-        typename = self.__class__.__module__.split('.')
-        typename.pop()
-        typename.append(self.__class__.__name__)
-        args = []
-        for s, t in zip(self.__slots__, self.SLOT_TYPES):
-            field = getattr(self, s)
-            fieldstr = repr(field)
-            # We use Python array type for fields that can be directly stored
-            # in them, and "normal" sequences for everything else.  If it is
-            # a type that we store in an array, strip off the 'array' portion.
-            if (
-                isinstance(t, rosidl_parser.definition.AbstractSequence) and
-                isinstance(t.value_type, rosidl_parser.definition.BasicType) and
-                t.value_type.typename in ['float', 'double', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32', 'int64', 'uint64']
-            ):
-                if len(field) == 0:
-                    fieldstr = '[]'
-                else:
-                    assert fieldstr.startswith('array(')
-                    prefix = "array('X', "
-                    suffix = ')'
-                    fieldstr = fieldstr[len(prefix):-len(suffix)]
-            args.append(s[1:] + '=' + fieldstr)
-        return '%s(%s)' % ('.'.join(typename), ', '.join(args))
+#     def __repr__(self):
+#         typename = self.__class__.__module__.split('.')
+#         typename.pop()
+#         typename.append(self.__class__.__name__)
+#         args = []
+#         for s, t in zip(self.__slots__, self.SLOT_TYPES):
+#             field = getattr(self, s)
+#             fieldstr = repr(field)
+#             # We use Python array type for fields that can be directly stored
+#             # in them, and "normal" sequences for everything else.  If it is
+#             # a type that we store in an array, strip off the 'array' portion.
+#             if (
+#                 isinstance(t, rosidl_parser.definition.AbstractSequence) and
+#                 isinstance(t.value_type, rosidl_parser.definition.BasicType) and
+#                 t.value_type.typename in ['float', 'double', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32', 'int64', 'uint64']
+#             ):
+#                 if len(field) == 0:
+#                     fieldstr = '[]'
+#                 else:
+#                     assert fieldstr.startswith('array(')
+#                     prefix = "array('X', "
+#                     suffix = ')'
+#                     fieldstr = fieldstr[len(prefix):-len(suffix)]
+#             args.append(s[1:] + '=' + fieldstr)
+#         return '%s(%s)' % ('.'.join(typename), ', '.join(args))
 
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        if self.data != other.data:
-            return False
-        return True
+#     def __eq__(self, other):
+#         if not isinstance(other, self.__class__):
+#             return False
+#         if self.data != other.data:
+#             return False
+#         return True
 
-    @classmethod
-    def get_fields_and_field_types(cls):
-        from copy import copy
-        return copy(cls._fields_and_field_types)
+#     @classmethod
+#     def get_fields_and_field_types(cls):
+#         from copy import copy
+#         return copy(cls._fields_and_field_types)
 
-    @builtins.property
-    def data(self):
-        """Message field 'data'."""
-        return self._data
+#     @builtins.property
+#     def data(self):
+#         """Message field 'data'."""
+#         return self._data
 
-    @data.setter
-    def data(self, value):
-        if __debug__:
-            assert \
-                isinstance(value, str), \
-                "The 'data' field must be of type 'str'"
-        self._data = value
-
-
-
-
-
-
-
+#     @data.setter
+#     def data(self, value):
+#         if __debug__:
+#             assert \
+#                 isinstance(value, str), \
+#                 "The 'data' field must be of type 'str'"
+#         self._data = value
 
 
 
@@ -186,12 +176,14 @@ class VLMTeleop(hm.HelloNode):
         # self.translate = 0.05 # meters
 
         self.soundhandle = SoundClient(self, blocking=True)
-        self.openai_key = os.getenv('OPENAI_API_KEY')
-        # print("openai_key: ", self.openai_key)
-        self.openai_client = OpenAI(api_key=self.openai_key)
-        self.tts_model = 'tts-1'
-        self.tts_voice = 'alloy'
-        self.tts_volume = 1.0
+        self.voice = 'voice_cmu_us_ahw_cg'
+        self.volume = 1.0
+        # self.openai_key = os.getenv('OPENAI_API_KEY')
+        # # print("openai_key: ", self.openai_key)
+        # self.openai_client = OpenAI(api_key=self.openai_key)
+        # self.tts_model = 'tts-1'
+        # self.tts_voice = 'alloy'
+        # self.tts_volume = 1.0
 
         # Initialize the voice command
         self.voice_command = ' ' 
@@ -200,8 +192,8 @@ class VLMTeleop(hm.HelloNode):
         self.sound_direction = 0 # not used?
 
         # Initialize subscribers
-        self.speech_to_text_sub = self.create_subscription(String, "/yayayay", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
-        # self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
+        # self.speech_to_text_sub = self.create_subscription(String, "/yayayay", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
+        self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
 
         self.sound_direction_sub = self.create_subscription(Int32, "/sound_direction", self.callback_direction, 1)
         self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
@@ -246,8 +238,8 @@ class VLMTeleop(hm.HelloNode):
 
     def callback_speech(self,msg):
         if not self.is_speaking: # might be redundant with same logic that's now in get_preprompt
-            # self.voice_command = ' '.join(map(str,msg.transcript))
-            self.voice_command = msg.data
+            self.voice_command = ' '.join(map(str,msg.transcript))
+            # self.voice_command = msg.data
 
             if self.voice_command != None:
                 self.get_logger().info(f'Voice Command: {self.voice_command}')
@@ -367,17 +359,21 @@ class VLMTeleop(hm.HelloNode):
             print('Finished getting VLM answer')
             vl_result = self.vl_cli_future.result()
             self.get_logger().info(f'VLM Result: {vl_result}')
-            
-            tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
-                                                      voice=self.tts_voice,
-                                                      input=vl_result.result,
-                                                      response_format="wav")
-            audio_result_path = "/home/hello-robot/lsy_software_tests/vlm_teleop_audio_output/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
-            tts_response.write_to_file(audio_result_path)
-            print("File should be saved now.")
             print("Speaking should start now.")
-            self.soundhandle.playWave(audio_result_path, self.tts_volume)
+            self.soundhandle.say(vl_result.result, self.voice, self.volume)
             print("Speaking should have ended now.")
+            
+            # tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
+            #                                           voice=self.tts_voice,
+            #                                           input=vl_result.result,
+            #                                           response_format="wav",
+            #                                           timeout=60)
+            # audio_result_path = "/home/hello-robot/lsy_software_tests/vlm_teleop_audio_output/vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
+            # tts_response.write_to_file(audio_result_path)
+            # print("File should be saved now.")
+            # print("Speaking should start now.")
+            # self.soundhandle.playWave(audio_result_path, self.tts_volume)
+            # print("Speaking should have ended now.")
             
         elif prompt_type == 'move' and joint_state is not None:
             print('Made it into "move" elif statement.')

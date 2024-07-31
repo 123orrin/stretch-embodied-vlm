@@ -1,9 +1,11 @@
 import hello_helpers.hello_misc as hm
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
 import os
+import time
 from sound_play.libsoundplay import SoundClient
 from sound_play_msgs.msg import SoundRequest
 from openai import OpenAI
@@ -40,14 +42,23 @@ class StretchLlmResponseSub(Node):
         audio_result_path = os.path.join(self.audio_result_folder, audio_filename)
 
         llm_response_text = msg.data
+
+        ######### OpenAI
         tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
                                                     voice=self.tts_voice,
                                                     input=llm_response_text,
-                                                    response_format="wav")
+                                                    response_format="wav",
+                                                    timeout=60)
         tts_response.write_to_file(audio_result_path)
+
+
+        ###### Realtime TTS Backup -- To be added
+
         print("File should be saved now.")
         print("Speaking should start now.")
         self.soundhandle.playWave(audio_result_path, self.tts_volume)
+        #time.sleep(5)
+        #self.soundhandle.stopWave(audio_result_path)
         print("Speaking should have ended now.")
         #self.tts_processed = True
         #print('self.tts_processed: ', self.tts_processed)
