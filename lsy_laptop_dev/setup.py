@@ -20,9 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'vision_language_server = lsy_laptop_dev.vision_language_server_copy:main',
-            #'stretch_speech_client = lsy_laptop_dev.vlm_teleop_openai_tts_LAPTOP_PORT:main'
-			'talker = lsy_laptop_dev.vlm_teleop_openai_tts_LAPTOP_PORT:main'
+            'vision_language_server = lsy_laptop_dev.vision_language_server_demo:main',
+            'vlm_teleop_demo = lsy_laptop_dev.vlm_teleop_off-robot_demo:main'
         ],
     },
 )
