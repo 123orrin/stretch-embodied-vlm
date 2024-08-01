@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'vision_language_server = lsy_laptop_dev.vision_language_server_copy:main',
-            'preprompt_server = lsy_laptop_dev.preprompt_server:main'
+            #'stretch_speech_client = lsy_laptop_dev.vlm_teleop_openai_tts_LAPTOP_PORT:main'
+			'talker = lsy_laptop_dev.vlm_teleop_openai_tts_LAPTOP_PORT:main'
         ],
     },
 )

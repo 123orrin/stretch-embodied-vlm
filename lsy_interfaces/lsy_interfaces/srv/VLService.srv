@@ -1,6 +1,0 @@
-uint8[] image
-string prompt
-bool use_image
-bool is_preprompt
----
-string result

@@ -46,6 +46,7 @@ class VLServer(Node):
         # return base64.b64encode(image).decode('utf-8')
 
     def vision_language_callback(self, request, response):
+        print('Request.prompt: ', request.prompt)
         if request.use_image:
             image = np.array(request.image).reshape(720, 1280, 3)
             image = np.rot90(image, 3)
