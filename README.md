@@ -22,6 +22,7 @@ Hardware:
 Software:
 * Python 3.X __TO ADD LATER__
 * OpenAI Key
+* Ubuntu 22.04
 
 ## 📦 Setup
 
