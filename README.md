@@ -1,16 +1,19 @@
+**Add pano photo of drone room here**
+
 # Stretch Embodied VLM
 Embodied AI with the Hello Robot Stretch3 with the Learnign Systems Lab
 
-[![PyTorch](https://img.shields.io/badge/Videos-Website-db6a4b.svg?style=for-the-badge&logo=airplayvideo)](https://ok-robot.github.io/)
+![PyTorch](https://img.shields.io/badge/Videos-db6a4b.svg?style=for-the-badge&logo=airplayvideo)
 
 
 ## Hardware and Software Requirements
 Hardware:
 * [Hello Robot Stretch3](https://hello-robot.com/) 
-* A workstation with GPU to run pretrained models 
+* A workstation with GPU and ROS2
 
 Software:
 * Python 3.X __TO ADD LATER__
+* OpenAI Key
 
 ## Installation
 
@@ -22,7 +25,7 @@ git clone https://github.com/123orrin/stretch_embodied_vlm.git
 Then cd into the directory and set up the environment with the required libraries using:
 ```
 cd stretch_embodied_vlm
-python -m venv embodied_vlm_env 
+# python -m venv embodied_vlm_env   ADD THE VERSION 
 # pip install requirements.txt or however else we do it
 ```
 
