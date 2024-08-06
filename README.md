@@ -17,12 +17,13 @@ __list them here__
 ## 📗 Hardware and Software Requirements
 Hardware:
 * [Hello Robot Stretch3](https://hello-robot.com/) 
-* A workstation with GPU and ROS2
+* A workstation with GPU 
 
 Software:
 * Python 3.X __TO ADD LATER__
 * OpenAI Key
 * Ubuntu 22.04
+* ROS2 Humble
 
 ## 📦 Setup
 
