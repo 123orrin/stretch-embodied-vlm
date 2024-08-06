@@ -1,16 +1,22 @@
-**Add pano photo of drone room here**
-
+<div align="center">
+  
+__Add pano photo of drone room here__
 # Stretch Embodied VLM
 Embodied AI with the Hello Robot Stretch3 with the Learnign Systems Lab
 
 [![PyTorch](https://img.shields.io/badge/Videos-db6a4b.svg?style=for-the-badge&logo=airplayvideo)](https://shattereddisk.github.io/rickroll/rickroll.mp4)
 
-## What Embodied VLM Can Do
+</div>
+
+## 🗺️ Table of Contents
+- [<code>📦 Setup</code>](#-📦Setup)
+
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png" alt="Robot" width="30" height="30" /> What Embodied VLM Can Do
 __list them here__
 
 *
 
-## Hardware and Software Requirements
+## 📗 Hardware and Software Requirements
 Hardware:
 * [Hello Robot Stretch3](https://hello-robot.com/) 
 * A workstation with GPU and ROS2
@@ -19,7 +25,7 @@ Software:
 * Python 3.X __TO ADD LATER__
 * OpenAI Key
 
-## Setup
+## 📦 Setup
 
 On the __workstation__, clone this repository:
 ```
