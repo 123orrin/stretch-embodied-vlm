@@ -13,7 +13,7 @@ Embodied AI with the Hello Robot Stretch3 with the Learning Systems & Robotics L
 - [<code>What Embodied VLM Can Do
  </code>](#-what-embodied-vlm-can-do)
 - [<code>Hardware and Software Requirements</code>](#-hardware-and-software-requirements)
-- [<code>Setup</code>](#-setup)
+- [<code>Installation and Setup</code>](#-installation-and-setup)
 - [<code>Running Embodied VLM</code>](#-running-embodied-vlm)
 - [<code>Basic Troubleshooting </code>](#-basic-troubleshooting)
 - [<code>Acknowledgments</code>](#-acknowledgments)
@@ -37,7 +37,7 @@ Software:
 * Ubuntu 22.04
 * ROS2 Humble
 
-## 📦 Setup
+## 📦 Installation and Setup
 
 On the __workstation__, clone this repository:
 ```
