@@ -2,14 +2,12 @@
   
 __Add pano photo of drone room here__
 # Stretch Embodied VLM
-Embodied AI with the Hello Robot Stretch3 with the Learnign Systems Lab
+Embodied AI with the Hello Robot Stretch3 with the Learning Systems & Robotics Lab
 
 [![PyTorch](https://img.shields.io/badge/Videos-db6a4b.svg?style=for-the-badge&logo=airplayvideo)](https://shattereddisk.github.io/rickroll/rickroll.mp4)
 
 </div>
 
-## 🗺️ Table of Contents
-- [<code>📦 Setup</code>](#-📦Setup)
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png" alt="Robot" width="30" height="30" /> What Embodied VLM Can Do
 __list them here__
@@ -40,7 +38,7 @@ cd stretch_embodied_vlm
 ```
 
 
-## Running Embodied VLM
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="25" height="25" /> Running Embodied VLM
 Run the following commands on Stretch and the workstation:
 
 ### On the Robot
