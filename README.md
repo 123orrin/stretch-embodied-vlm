@@ -15,6 +15,7 @@ Embodied AI with the Hello Robot Stretch3 with the Learning Systems & Robotics L
 - [<code>📗 Hardware and Software Requirements</code>](#-hardware-and-software-requirements)
 - [<code>📦 Setup</code>](#-setup)
 - [<code><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="20" height="20" /> Running Embodied VLM</code>](#-running-embodied-vlm)
+- [<code><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Man%20Mechanic%20Light%20Skin%20Tone.png" alt="Man Mechanic Light Skin Tone" width="25" height="25" /> Basic Troubleshooting </code>](#-basic-troubleshooting)
 - [<code>📢 Acknowledgments</code>](#-acknowledgments)
 
 
