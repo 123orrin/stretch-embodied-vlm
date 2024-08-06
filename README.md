@@ -7,6 +7,7 @@ Embodied AI with the Hello Robot Stretch3 with the Learnign Systems Lab
 
 ## What Embodied VLM Can Do
 __list them here__
+
 *
 
 ## Hardware and Software Requirements
