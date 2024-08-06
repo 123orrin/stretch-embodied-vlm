@@ -15,7 +15,7 @@ Software:
 * Python 3.X __TO ADD LATER__
 * OpenAI Key
 
-## Installation
+## Setup
 
 On the __workstation__, clone this repository:
 ```
