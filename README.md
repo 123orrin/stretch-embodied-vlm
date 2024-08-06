@@ -9,7 +9,21 @@ Embodied AI with the Hello Robot Stretch3 with the Learning Systems & Robotics L
 </div>
 
 
+## 🗺️ Table of Contents 
+- [<code>📦 Setup</code>](#-setup)
+- [<code>📗 Hardware and Software Requirements</code>](#-hardware-and-software-requirements)
+- [<code>🎧 Playlist management</code>](#-playlist-management)
+- [<code>🚦️ Controls</code>](#-controls)
+- [<code>⚙️ Configuration</code>](#-configuration)
+- [<code>💾 Cache</code>](#-cache)
+- [<code>🌐 Update</code>](#-update)
+- [<code>📝 License</code>](#-license)
+- [<code>📢 Acknowledgments</code>](#-acknowledgments)
+
+
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png" alt="Robot" width="30" height="30" /> What Embodied VLM Can Do
+
+
 __list them here__
 
 *
@@ -40,7 +54,7 @@ cd stretch_embodied_vlm
 ```
 
 
-## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="25" height="25" /> Running Embodied VLM
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="30" height="30" /> Running Embodied VLM
 Run the following commands on Stretch and the workstation:
 
 ### On the Robot
@@ -58,3 +72,6 @@ stretch_robot_home.py
 ```
 
 
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Man%20Mechanic%20Light%20Skin%20Tone.png" alt="Man Mechanic Light Skin Tone" width="35" height="35" /> Basic Troubleshooting
+
+If a "process has died" error is encountered, run ```stretch_free_robot_process.py``` and run the command again
