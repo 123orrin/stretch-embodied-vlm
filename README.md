@@ -5,6 +5,9 @@ Embodied AI with the Hello Robot Stretch3 with the Learnign Systems Lab
 
 [![PyTorch](https://img.shields.io/badge/Videos-db6a4b.svg?style=for-the-badge&logo=airplayvideo)](https://shattereddisk.github.io/rickroll/rickroll.mp4)
 
+## What Embodied VLM Can Do
+__list them here__
+*
 
 ## Hardware and Software Requirements
 Hardware:
