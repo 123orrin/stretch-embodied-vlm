@@ -17,10 +17,10 @@ To begin the VLM Teleop demo, follow the instructions in the **Running VLM Teleo
 For each command/prompt, you must begin with "Amy". For example, "Amy, move forward 1 meter" will work.
 
 VLM Teleop has 4 functions:
-- chat - a simple conversation with Stretch
-- describe - a sim
-- move a certain distance and direction
-- move towards an object
+- **chat** - a simple conversation with Stretch
+- **describe** - describes what Stretch's camera sees
+- **move a certain distance and direction** - moves in a direction/turns by a certain distance or angle
+- **move towards an object** - moves towards an object in the camera's current field of vision (this is very buggy and bad right now)
 
 The code will automatically determine which function to perform based on the prompt you give. Simply begin to give your commands.
 
@@ -31,11 +31,14 @@ You will need **3 Terminals open on the workstation** and **1 on Stretch**
 
 On **Stretch**, run:
 ```
+stretch_free_robot_process.py
+stretch_robot_home.py
+
 cd ~/ament_ws/src/path to launch file
 ros2 launch the launch
 ```
 
-On the **Workstation in one terminal**, the following commands. This should activate the Speech to Text system:
+On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
 ```
 cd /repos/mic
 source stt2/bin/activate
