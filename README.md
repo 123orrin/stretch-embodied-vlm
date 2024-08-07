@@ -34,7 +34,7 @@ On **Stretch**, run:
 stretch_free_robot_process.py
 stretch_robot_home.py
 
-cd ~/ament_ws/src/path to launch file
+cd ~/ament_ws/src/lst_robot_dev/launch
 ros2 launch the launch
 ```
 
@@ -49,16 +49,16 @@ On the **second terminal**, run:
 ```
 cd ament_ws
 source ./install/setup.bash
-cd to the files
-run the service
+cd /src/lsy_laptop_dev
+python3 vision_language_server_copy.py
 ```
 
 On the **third terminal**, run
 ```
 cd ament_ws
 source ./install/setup.bash
-cd to the files
-run the vlm code
+cd /src/lsy_laptop_dev
+python3 move_to_object.py
 ```
 
 Everything should be running then, and begin giving your commands!
