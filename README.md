@@ -8,8 +8,60 @@ Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
 </div>
 
+## Temporary Demo Instructions for Aug 9
 
-## 🗺️ Table of Contents 
+
+### Commanding Stretch using VLM Teleop
+To begin the VLM Teleop demo, follow the instructions in the **Running VLM Teleop** Section below.
+
+For each command/prompt, you must begin with "Amy". For example, "Amy, move forward 1 meter" will work.
+
+VLM Teleop has 4 functions:
+- chat - a simple conversation with Stretch
+- describe - a sim
+- move a certain distance and direction
+- move towards an object
+
+The code will automatically determine which function to perform based on the prompt you give. Simply begin to give your commands.
+
+
+
+### Running VLM Teleop
+You will need **3 Terminals open on the workstation** and **1 on Stretch**
+
+On **Stretch**, run:
+```
+cd ~/ament_ws/src/path to launch file
+ros2 launch the launch
+```
+
+On the **Workstation in one terminal**, the following commands. This should activate the Speech to Text system:
+```
+cd /repos/mic
+source stt2/bin/activate
+python3 new.py
+```
+
+On the **second terminal**, run:
+```
+cd ament_ws
+source ./install/setup.bash
+cd to the files
+run the service
+```
+
+On the **third terminal**, run
+```
+cd ament_ws
+source ./install/setup.bash
+cd to the files
+run the vlm code
+```
+
+Everything should be running then, and begin giving your commands!
+
+
+## 🗺️ Table of Contents (everything under here is still work in progress)
 - [<code>What Embodied VLM Can Do
  </code>](#-what-embodied-vlm-can-do)
 - [<code>Hardware and Software Requirements</code>](#-hardware-and-software-requirements)
