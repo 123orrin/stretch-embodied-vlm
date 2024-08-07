@@ -4,7 +4,7 @@ __Add pano photo of drone room here__
 # Stretch Embodied VLM
 Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
-[![PyTorch](https://img.shields.io/badge/Videos-db6a4b.svg?style=for-the-badge&logo=airplayvideo)](https://shattereddisk.github.io/rickroll/rickroll.mp4)
+[![PyTorch](https://img.shields.io/badge/Demonstration_Video-db6a4b.svg?style=for-the-badge&logo=airplayvideo)](https://shattereddisk.github.io/rickroll/rickroll.mp4)
 
 </div>
 
