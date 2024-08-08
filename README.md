@@ -12,7 +12,7 @@ Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
 
 ### Commanding Stretch using VLM Teleop
-To begin the VLM Teleop demo, follow the instructions in the [<code>Running VLM Teleop</code>](##-running-vlm-teleop) Section below.
+To begin the VLM Teleop demo, follow the instructions in the [<code>Running VLM Teleop</code>](##-running-vlm-teleop) section below.
 
 For each command/prompt, you must begin with "Amy". For example, "Amy, move forward 1 meter" will work.
 
