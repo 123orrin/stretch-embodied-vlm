@@ -27,7 +27,8 @@ The code will automatically determine which function to perform based on the pro
 
 
 ### Running VLM Teleop
-You will need **3 Terminals open on the workstation** and **1 on Stretch**
+- You will need **3 Terminals open on the workstation** and **1 on Stretch**
+- Make sure to **connect your microphone to the workstation**
 
 On **Stretch**, run:
 ```
