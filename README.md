@@ -34,7 +34,7 @@ On **Stretch**, run:
 stretch_free_robot_process.py
 stretch_robot_home.py
 
-cd ~/ament_ws/src/lst_robot_dev/launch
+cd ~/ament_ws/src/lsy_robot_dev/launch
 ros2 launch the launch
 ```
 
