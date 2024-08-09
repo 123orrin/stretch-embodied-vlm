@@ -36,12 +36,12 @@ stretch_free_robot_process.py
 stretch_robot_home.py
 
 cd ~/ament_ws/src/lsy_robot_dev/launch
-ros2 launch the launch
+ros2 launch vlm_teleop_launch
 ```
 
 On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
 ```
-cd /repos/mic
+cd repos/mic
 source stt2/bin/activate
 python3 new.py
 ```
@@ -50,7 +50,7 @@ On the **second terminal**, run:
 ```
 cd ament_ws
 source ./install/setup.bash
-cd /src/lsy_laptop_dev
+cd src/lsy_laptop_dev/lsy_laptop_dev
 python3 vision_language_server_copy.py
 ```
 
@@ -58,7 +58,7 @@ On the **third terminal**, run
 ```
 cd ament_ws
 source ./install/setup.bash
-cd /src/lsy_laptop_dev
+cd src/lsy_laptop_dev/lsy_laptop_dev
 python3 move_to_object.py
 ```
 
