@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/src/rosbridge_suite/rosbridge_test_msgs/msg/TestChar.msg

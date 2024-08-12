@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/rosbridge_test_msgs/rosidl_generator_py/rosbridge_test_msgs/srv/__init__.py

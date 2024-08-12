@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/rosapi/ament_cmake_python/rosapi/rosapi.egg-info/dependency_links.txt

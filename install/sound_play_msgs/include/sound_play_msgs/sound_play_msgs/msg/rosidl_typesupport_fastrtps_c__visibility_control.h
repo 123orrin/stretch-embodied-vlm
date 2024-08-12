@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/sound_play_msgs/rosidl_typesupport_fastrtps_c/sound_play_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h

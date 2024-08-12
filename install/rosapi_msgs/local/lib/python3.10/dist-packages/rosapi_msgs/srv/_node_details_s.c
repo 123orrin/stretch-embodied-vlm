@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/rosapi_msgs/rosidl_generator_py/rosapi_msgs/srv/_node_details_s.c

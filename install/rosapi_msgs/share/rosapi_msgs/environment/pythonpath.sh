@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/rosapi_msgs/ament_cmake_environment_hooks/pythonpath.sh

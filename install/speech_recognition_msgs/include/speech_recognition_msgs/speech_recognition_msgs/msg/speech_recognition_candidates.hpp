@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/speech_recognition_msgs/rosidl_generator_cpp/speech_recognition_msgs/msg/speech_recognition_candidates.hpp

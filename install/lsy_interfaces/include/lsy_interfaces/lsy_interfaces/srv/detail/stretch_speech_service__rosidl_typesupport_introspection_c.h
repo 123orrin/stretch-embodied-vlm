@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/lsy_interfaces/rosidl_typesupport_introspection_c/lsy_interfaces/srv/detail/stretch_speech_service__rosidl_typesupport_introspection_c.h

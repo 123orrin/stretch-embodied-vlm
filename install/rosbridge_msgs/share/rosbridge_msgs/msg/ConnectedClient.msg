@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/src/rosbridge_suite/rosbridge_msgs/msg/ConnectedClient.msg

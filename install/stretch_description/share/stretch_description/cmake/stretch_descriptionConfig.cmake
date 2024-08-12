@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/stretch_description/ament_cmake_core/stretch_descriptionConfig.cmake

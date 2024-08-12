@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/audio_common_msgs/rosidl_typesupport_fastrtps_c/audio_common_msgs/msg/detail/audio_data__rosidl_typesupport_fastrtps_c.h

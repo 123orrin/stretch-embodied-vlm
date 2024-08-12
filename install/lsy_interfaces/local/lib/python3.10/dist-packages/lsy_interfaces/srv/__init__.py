@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/lsy_interfaces/rosidl_generator_py/lsy_interfaces/srv/__init__.py

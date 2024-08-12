@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/lsy_interfaces/rosidl_cmake/srv/StretchSpeechService_Response.msg

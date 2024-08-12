@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/stretch_nav2/ament_cmake_core/stretch_nav2Config-version.cmake

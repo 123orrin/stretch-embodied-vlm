@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/rosbridge_suite/ament_cmake_core/rosbridge_suiteConfig.cmake

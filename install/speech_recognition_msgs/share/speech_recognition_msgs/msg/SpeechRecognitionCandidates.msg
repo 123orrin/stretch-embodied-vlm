@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/src/audio_common/speech_recognition_msgs/msg/SpeechRecognitionCandidates.msg

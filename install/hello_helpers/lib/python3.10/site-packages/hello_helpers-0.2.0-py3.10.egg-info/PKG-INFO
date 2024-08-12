@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: hello_helpers
+Version: 0.2.0
+Summary: The hello_helpers package
+Home-page: 
+Author: Hello Robot Inc.
+Author-email: support@hello-robot.com
+License: Apache License 2.0
+License-File: LICENSE.md
+Requires-Dist: setuptools

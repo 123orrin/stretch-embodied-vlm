@@ -1,0 +1,1 @@
+/home/hello-robot/ament_ws/build/rosbridge_msgs/ament_cmake_python/rosbridge_msgs/rosbridge_msgs.egg-info/SOURCES.txt
