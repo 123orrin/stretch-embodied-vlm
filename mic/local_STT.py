@@ -50,30 +50,22 @@ def main(args=None):
                         input=True,
                         frames_per_buffer=8192)
 
-        output_file_path = "recognized_text.txt"
 
-
-        with open(output_file_path, "w") as output_file:
-            print("Listening for speech. Say 'Terminate' to stop.")
-            # Start streaming and recognize speech
-            while True:
-                data = stream.read(4096)#read in chunks of 4096 bytes
-                if rec.AcceptWaveform(data):#accept waveform of input voice
-                    # Parse the JSON result and get the recognized text
-                    result = json.loads(rec.Result())
-                    recognized_text = result['text']
-                    msg.data = recognized_text
-                    minimal_publisher.publisher_.publish(msg)
-
-                    
-                    # Write recognized text to the file
-                    output_file.write(recognized_text + "\n")
-                    print(recognized_text)
-                    
-                    # Check for the termination keyword
-                    if "terminate" in recognized_text.lower():
-                        print("Termination keyword detected. Stopping...")
-                        break
+        print("Listening for speech. Say 'Terminate' to stop.")
+        # Start streaming and recognize speech
+        while True:
+            data = stream.read(4096)#read in chunks of 4096 bytes
+            if rec.AcceptWaveform(data):#accept waveform of input voice
+                # Parse the JSON result and get the recognized text
+                result = json.loads(rec.Result())
+                recognized_text = result['text']
+                msg.data = recognized_text
+                minimal_publisher.publisher_.publish(msg)
+                print(recognized_text)
+                
+                if "terminate" in recognized_text.lower():
+                    print("Termination keyword detected. Stopping...")
+                    break
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
