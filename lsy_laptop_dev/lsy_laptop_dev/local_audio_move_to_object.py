@@ -31,6 +31,9 @@ from tf2_ros.transform_listener import TransformListener
 
 from copy import deepcopy
 
+from path_planning import *
+from odom_subscriber import *
+
 import pyaudio  
 import wave  
 
@@ -44,7 +47,6 @@ import numpy as np
 
 # Importing ollama for the local llm
 from langchain_ollama import OllamaLLM
-
 
 
 def tts_and_audio_output(message):
@@ -151,37 +153,31 @@ class VLMTeleop(hm.HelloNode):
             In case of uncertainty, output "chat". In addition, output "True" or "False" if you think the prompt below \
             requires you to receive an image to be able to best answer the prompt. If you do not have the information required \
             to answer the prompt or if you do not have access to real-time data, you should output "True". You should also output \
-            “True” and the name of the object in lower case if the category is “move to object”. Your final output should be in the following \
-            format, substituting prompt_type for "move", "describe", "chat", and substituting use_image for "True", "False", and \
-            object_target for the name of the object: prompt_type&use_image&object_target \nPrompt: ' + user_prompt
-        #If you don\'t have the information required to answer the prompt without an image because your training data was cutoff before that date or because you do not have access to real-time data, you should always output "True".
+            the object and its location in lower case if the category is “move to object”.  Your final output should be in the following \
+            format, substituting prompt_type for "move", "describe", "chat", and substituting use_image for "True", "False",  \
+            object_target for the name of the object, and object_location for where the object is located near or on. If there are no appropriate \
+            answers for object_loaction or target_object, output None for each of them respectively: prompt_type&use_image&object_target&object_location \nPrompt: ' + user_prompt
 
         print('Initial user_prompt: ', user_prompt)
-        self.vl_req.prompt = query
-        self.vl_req.image = self.image
-        self.vl_req.use_image = False
-        self.vl_req.is_preprompt = True
-        
-        self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
-        rclpy.spin_until_future_complete(self, self.vl_cli_future)
-        print('Finished getting prompt type from VLM')
-        result = self.vl_cli_future.result()
-        print(f"The result of the initial query is: {result}")
-        preprompt_result = result.result.split('&')
-        prompt_type = preprompt_result[0]
-        
 
-        self.vl_req.use_image = True if "True" in preprompt_result[1] else False
-        self.get_logger().info(f'VLM result.result, aka prompt_type,use_image: {prompt_type, self.vl_req.use_image}')
+        ### USING LLAMA ###
+        result = llama_llm_responder(query)
+      
+        
+        print(f"The result of the initial query is: {result}")
+        preprompt_result = result.split('&')
+        prompt_type = preprompt_result[0]
+        use_image = preprompt_result[1]
+        target_object = preprompt_result[2]
+        object_location = preprompt_result[3]
+        
         
         # Reset voice command to None so that it's ready for next iteration of getting preprompt; OK to do this since we've already saved self.voice_command to user_prompt
         self.voice_command = ' ' # not sure about the best location for this line
         
-        if len(preprompt_result) == 3:
-            object_target = preprompt_result[2]
-            return prompt_type, user_prompt, object_target
-        else:
-            return prompt_type, user_prompt, False
+
+        return prompt_type, use_image, target_object, object_location
+  
     
 
 
@@ -200,9 +196,10 @@ class VLMTeleop(hm.HelloNode):
         self.vl_req.is_preprompt = False
 
     ########################################################## DESCRIBE AND CHAT ##########################################################
-        if prompt_type == 'describe' or prompt_type == 'chat':
+        if prompt_type == 'describe':
             self.vl_req.image = self.image
-            self.vl_req.prompt = f'For your response, the only punctuation marks you may use are commas. You may not use periods, exclamation marks, or etc: {prompt}'
+            self.vl_req.prompt = f'For your response, the only punctuation marks you may use are commas. \
+                You may not use periods, exclamation marks, or etc: {prompt}'
 
             if self.vl_req.use_image:
                 print('Mode: send image. Sending user prompt along with image to VLM')
@@ -214,86 +211,32 @@ class VLMTeleop(hm.HelloNode):
             print('Finished getting VLM answer')
             vl_result = self.vl_cli_future.result()
             self.get_logger().info(f'VLM Result: {vl_result}')
-        
-		############# LOCAL TTS FUNCTION #############
+
             tts_and_audio_output(vl_result.result)
+        
+        elif prompt_type == 'chat':
+            chat_query = f'For your response, the only punctuation marks you may use are commas. \
+                You may not use periods, exclamation marks, or etc: {prompt}'
+            chat_result = llama_llm_responder(chat_query)
+            tts_and_audio_output(chat_result)
 
 
-
-        ############# OPENAI TTS, WHERE INPUT TO TTS IS vl_result.result #############
-            # tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
-            #                                           voice=self.tts_voice,
-            #                                           input='hello Vendant' + vl_result.result,
-            #                                           response_format="wav",
-            #                                           timeout=60)
-            # audio_result_path = "./vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
-            # tts_response.write_to_file(audio_result_path)
-            # print("File should be saved now.")
-            # print("Speaking should start now.")
-           
-         
-            
-            # #define stream chunk   
-            # chunk = 1024  
-            
-            # #open a wav format music  
-
-            # f = wave.open(r"./vlm_teleop_openai_tts.wav","rb")  
-            # #instantiate PyAudio  
-            # p = pyaudio.PyAudio()  
-            # #open stream  
-            # stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
-            #                 channels = f.getnchannels(),  
-            #                 rate = f.getframerate(),  
-            #                 output = True)  
-            # #read data  
-            # data = f.readframes(chunk)  
-            
-            # #play stream  
-            # while data:  
-            #     stream.write(data)  
-            #     data = f.readframes(chunk)  
-            
-            # #stop stream  
-            # stream.stop_stream()  
-            # stream.close()  
-            
-            # #close PyAudio  
-            # p.terminate() 
-            # print("Speaking should have ended now.")
-        ############ END OF OPENAI TTS #############
-            
-
-            ############# REALTIME TTS #############
-            # import pyttsx3 
-            # engine = pyttsx3.init()
-            # engine.say(vl_result.result)
-            # engine.runAndWait()
-           
-            ############# END OF REALTIME TTS #############
 
     ############################################################# MOVE BY SPECIFIC DISTANCE #############################################################           
         elif prompt_type == 'move by specific distance' and joint_state is not None:
             print('iudhglgldkjgldakjgnfdhj')
             tts_and_audio_output('Sure!')
-            ######################### END OF ACKNOWLEDGEMENT #########################
             print('Made it into "move" elif statement.')
-            self.vl_req.image = self.image
-            self.vl_req.use_image = False # only hard-coded for move mode
-            # Get prompt in easy-to-use format from GPT-4o-mini:
-            self.vl_req.prompt = 'Reformat the following prompt into two lists with the following format:\n\
-                list_1 = [direction_1, direction_2, ..., direction_i, ..., direction_n] | list_2 = [distance_1, distance_2, ..., distance_i, ..., distance_n]\n\
-                direction_i must be one of four words: forward, backward, left, right. distance_i must be a float value. \n\
-                The unit of distance should be meters if direction[i] is forward or backward, and it should be radians if direction i is right or left. \nPrompt: ' + prompt
-            # list_1 = [direction_1, distance_1), ..., (direction_i, distance_i), ..., (direction_n, distance_n)]
-            self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
-            rclpy.spin_until_future_complete(self, self.vl_cli_future)
-            print('Finished getting VLM answer')
-            vl_result = self.vl_cli_future.result()
-            self.get_logger().info(f'VLM Result: {vl_result}')
+
+
+            specific_distance_query = 'Reformat the following prompt into two lists with the following format:\n\
+                    list_1 = [direction_1, direction_2, ..., direction_i, ..., direction_n] | list_2 = [distance_1, distance_2, ..., distance_i, ..., distance_n]\n\
+                 direction_i must be one of four words: forward, backward, left, right. distance_i must be a float value. \n\
+                 The unit of distance should be meters if direction[i] is forward or backward, and it should be radians if direction i is right or left. \nPrompt: ' + prompt
+            unformatted_commands = llama_llm_responder(specific_distance_query)
             
 			# Formatting movement commands for the robot
-            moves = vl_result.result
+            moves = unformatted_commands
             print('Original moves: ', moves)
             moves = moves.replace('list_1 = [', '')
             moves = moves.replace(' list_2 = [', '')
@@ -367,149 +310,11 @@ class VLMTeleop(hm.HelloNode):
         
     ########################################################## MOVE TO OBJECT ##########################################################
         elif prompt_type == 'move to object' and joint_state is not None:
-
-            '''
-            Steps for Move to Object
-            1. Convert prompt to ordered instructions using GPT
-            2. Format ordered instructions using GPT
-            3. Split instructions into 2 lists: direction, distance/angle
-                - Direction: forward, backward, left, right
-                - Distance/angle: meters, radians
-            4. Send the instructions to the robot
-            '''
-
-            if self.vl_req.use_image:
-                print('Mode: send image. Sending user prompt along with image to VLM')
-            else:
-                print('Mode: don\'t send image. Sending only user prompt to VLM')
-
-            self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
-            rclpy.spin_until_future_complete(self, self.vl_cli_future)
-            print('Finished getting VLM answer')
-            vl_result = self.vl_cli_future.result()
-            self.get_logger().info(f'VLM Result: {vl_result}')
-
-
-        ############ STEP 1 ############
-            self.vl_req.image = self.image
-            self.vl_req.use_image = True # needed for move to object
-            # Get prompt in easy-to-use format from GPT-4o-mini:
-            # self.vl_req.prompt = 'Reformat the following prompt into two lists with the following format:\nlist_1 = [direction_1, direction_2, ..., direction_i, ..., direction_n] | list_2 = [distance_1, distance_2, ..., distance_i, ..., distance_n]\ndirection_i must be one of four words: forward, backward, left, right. distance_i must be a float value. The unit of distance should be meters if direction[i] is forward or backward, and it should be radians if direction i is right or left. \nPrompt: ' + prompt
-            self.vl_req.prompt = f'From the image, give directions in units of length for how the camera can arrive in front of the given object and face it. \
-                Be cautious with your commands and make sure to not collide with the object. Assume that the camera is facing forward, where forward is in the \
-                direction the camera is pointing. Make sure to number your commands. Try to use the least number of commands as possible. A sample output is \
-                “1. turn right by 20 degrees 2. Move forward by 2 meters” If you cannot see the object, output “None”. \
-                The object you are moving towards is: {object_target}'
-            print('VLM Prompt: ', self.vl_req.prompt)
-            # list_1 = [direction_1, distance_1), ..., (direction_i, distance_i), ..., (direction_n, distance_n)]
-            self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
-            rclpy.spin_until_future_complete(self, self.vl_cli_future)
-            print('Finished getting VLM answer')
-            unformatted_response = self.vl_cli_future.result()
-        
-        ############ STEP 2 ############
-            self.vl_req.image = self.image
-            self.vl_req.use_image = False
-            self.vl_req.prompt = f'From the given instructions, reformat it into 2 lists: ‘list1’ and ‘list2’. \
-                In list1, add only one of the 4 following directions to each element: ‘forward’, ‘backward’, ‘left’, ‘right’. \
-                In list2, add the corresponding distance in meters or angle in radians. For ‘forward’ or ‘backwards’, add the \
-                distance in meters, and for ‘left’ or ‘right’, append the appropriate angle in radians. Format the output as \
-                follows: ‘list1 = [direction_1, direction_2, …, direction_n] | list2 = [distance/angle_1, distance/angle_2, …, distance/angle_n]’. \
-                Make sure to only return this format as the output. From the example instructions ‘Move forward by 1.5 meters’ would be ‘list1 = [forward] |list2 = [1.5]’. \
-                The given instructions are: {unformatted_response}'
-            
-			# want to format into list1 = [directions], list2 = [distances/angles]
-            print('VLM Prompt: ', self.vl_req.prompt)
-            # list_1 = [direction_1, distance_1), ..., (direction_i, distance_i), ..., (direction_n, distance_n)]
-            self.vl_cli_future = self.vl_cli.call_async(self.vl_req)
-            rclpy.spin_until_future_complete(self, self.vl_cli_future)
-            print('Finished getting VLM answer')
-            vl_result = self.vl_cli_future.result()
-
-            if vl_result != 'None':
-            ############ STEP 3 ############
-                self.get_logger().info(f'VLM Result: {vl_result}')
-                moves = vl_result.result
-                print('Original moves: ', moves)
-                moves = moves.replace("list1 = [", '')
-                moves = moves.replace(' list2 = [', '')
-                moves = moves.replace(']', '')
-                moves = moves.replace('"', '').replace(' ', '')
-                moves = moves.split('|')
-                print('Processed moves: ', moves)
-                move_directions = moves[0]
-                move_distances = moves[1]
-                move_directions_list = move_directions.split(',')
-                print(move_directions_list)
-                move_distances.replace(']', '')
-                move_distances_list = move_distances.split(',')
-
-
-            ############ STEP 4 ############
-                assert len(move_directions_list) == len(move_distances_list)
-
-                print(move_directions_list)
-                print(move_distances_list)
-
-
-                for i in range(len(move_directions_list)):
-                    print('direction_i, distance_i: ', move_directions_list[i], move_distances_list[i])
-                    if move_distances_list[i] == '':
-                        move_distances_list[i] = '0.0'
-                        
-                    # Assign point as a JointTrajectoryPoint message prompt_type
-                    point = JointTrajectoryPoint()
-                    point.time_from_start = Duration(seconds=0).to_msg()
-
-                    # Assign trajectory_goal as a FollowJointTrajectoryGoal message prompt_type
-                    trajectory_goal = FollowJointTrajectory.Goal()
-                    trajectory_goal.goal_time_tolerance = Duration(seconds=0).to_msg()
-
-                    print(move_directions_list, move_distances_list)
-                    if move_directions_list[i] == 'forward' or move_directions_list[i] == 'backward':
-                        joint_name = 'translate_mobile_base'
-                        inc = float(move_distances_list[i])
-                        if move_directions_list[i] == 'backward':
-                            inc = -inc
-
-                        trajectory_goal.trajectory.joint_names = [joint_name]
-                        new_value = inc
-                        # Assign the new_value position to the trajectory goal message prompt_type
-                        point.positions = [new_value]
-                        trajectory_goal.trajectory.points = [point]
-                        trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
-                        #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
-                        # Make the action call and send goal of the new joint position
-                        self.trajectory_client.send_goal_async(trajectory_goal)
-                        time.sleep(5)
-                        self.get_logger().info('Done sending linear translation command.')
-                        
-
-                    elif move_directions_list[i] == 'right' or move_directions_list[i] == 'left':
-                        joint_name = 'rotate_mobile_base'
-                        inc = -float(move_distances_list[i])
-                        # if move_distances_list[i] ==
-                        if move_directions_list[i] == 'left':
-                            inc = -inc
-                        trajectory_goal.trajectory.joint_names = [joint_name]
-                        new_value = inc
-
-                        # Assign the new_value position to the trajectory goal message prompt_type
-                        point.positions = [new_value]
-                        trajectory_goal.trajectory.points = [point]
-                        trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
-                        #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
-                        # Make the action call and send goal of the new joint position
-                        self.trajectory_client.send_goal_async(trajectory_goal)
-                        time.sleep(5)
-                        self.get_logger().info('Done sending rotation command.')
-                else:
-                    print(f'{object_target} not detected')
-
-            self.get_logger().info('Finished Target Movement')
-
-
-    ## Node main
+            run_planner()
+            excecute_path()
+            # Add zoe's stuff here
+    
+    
     def main(self):
         while rclpy.ok():
             rclpy.spin_once(self)
