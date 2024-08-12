@@ -41,14 +41,11 @@ ros2 launch vlm_teleop_launch
 
 On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
 ```
-cd repos/mic
-python3 -m venv stt_env
+cd mic
+python3 -m venv mic_env
 source stt_env/bin/activate
-
-pip install pyaudio
-pip install vosk
-
-python3 new.py
+pip install -r requirements.txt
+python3 local_STT.py
 ```
 
 On the **second terminal**, run:
