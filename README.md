@@ -112,6 +112,15 @@ cd stretch_embodied_vlm
 # pip install requirements.txt or however else we do it
 ```
 
+On the workstation, you will also need to set up the speech to text system. In another terminal, setup another environment and enter the following:
+```
+python3 -m venv stt_env
+source stt_env/bin/activate
+
+pip install pyaudio
+pip install vosk
+```
+
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="30" height="30" /> Running Embodied VLM
 Run the following commands on Stretch and the workstation:
