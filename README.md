@@ -53,7 +53,7 @@ python3 new.py
 
 On the **second terminal**, run:
 ```
-cd ament_ws
+colcon build --packages-select lsy_laptop_dev
 source ./install/setup.bash
 cd src/lsy_laptop_dev/lsy_laptop_dev
 python3 vision_language_server_copy.py
@@ -61,7 +61,6 @@ python3 vision_language_server_copy.py
 
 On the **third terminal**, run
 ```
-cd ament_ws
 colcon build --packages-select lsy_laptop_dev
 source ./install/setup.bash
 cd src/lsy_laptop_dev/lsy_laptop_dev
