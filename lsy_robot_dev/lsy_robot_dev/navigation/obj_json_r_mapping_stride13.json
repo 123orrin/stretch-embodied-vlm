@@ -1,0 +1,754 @@
+{
+  "object_1": {
+    "id": 1,
+    "object_tag": "stool",
+    "object_caption": "A round beige upholstered stool with wooden legs in the foreground near the sofa chair.",
+    "bbox_extent": [
+      0.66,
+      0.68,
+      0.49
+    ],
+    "bbox_center": [
+      1.79,
+      0.65,
+      -1.24
+    ],
+    "bbox_volume": 0.22
+  },
+  "object_2": {
+    "id": 5,
+    "object_tag": "stool",
+    "object_caption": "A round beige upholstered stool with four wooden legs in the foreground.",
+    "bbox_extent": [
+      0.66,
+      0.65,
+      0.48
+    ],
+    "bbox_center": [
+      1.84,
+      1.53,
+      -1.22
+    ],
+    "bbox_volume": 0.21
+  },
+  "object_3": {
+    "id": 7,
+    "object_tag": "lamp",
+    "object_caption": "A wall-mounted lamp with a white shade, illuminating the room from the left side.",
+    "bbox_extent": [
+      0.44,
+      0.48,
+      0.37
+    ],
+    "bbox_center": [
+      2.28,
+      -0.76,
+      -0.26
+    ],
+    "bbox_volume": 0.08
+  },
+  "object_4": {
+    "id": 8,
+    "object_tag": "closet door",
+    "object_caption": "A partially open wooden closet door on the left side of the room.",
+    "bbox_extent": [
+      2.29,
+      1.34,
+      0.07
+    ],
+    "bbox_center": [
+      -0.18,
+      -1.11,
+      -0.4
+    ],
+    "bbox_volume": 0.21
+  },
+  "object_5": {
+    "id": 9,
+    "object_tag": "window",
+    "object_caption": "Square window with multiple panes in a grid pattern on the wall, allowing natural light into the room.",
+    "bbox_extent": [
+      1.17,
+      1.1,
+      0.03
+    ],
+    "bbox_center": [
+      -0.84,
+      1.1,
+      0.01
+    ],
+    "bbox_volume": 0.04
+  },
+  "object_6": {
+    "id": 10,
+    "object_tag": "toaster",
+    "object_caption": "A small toaster on the cabinet.",
+    "bbox_extent": [
+      0.42,
+      0.32,
+      0.12
+    ],
+    "bbox_center": [
+      -0.66,
+      0.77,
+      -0.8
+    ],
+    "bbox_volume": 0.02
+  },
+  "object_7": {
+    "id": 11,
+    "object_tag": "end table",
+    "object_caption": "A round tan stool near a small end table next to the sofa.",
+    "bbox_extent": [
+      0.76,
+      0.91,
+      0.34
+    ],
+    "bbox_center": [
+      2.45,
+      -0.51,
+      -0.85
+    ],
+    "bbox_volume": 0.24
+  },
+  "object_8": {
+    "id": 12,
+    "object_tag": "power outlet",
+    "object_caption": "Power outlet on the left wall near the closet door.",
+    "bbox_extent": [
+      0.17,
+      0.13,
+      0.01
+    ],
+    "bbox_center": [
+      1.24,
+      -1.11,
+      -0.33
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_9": {
+    "id": 14,
+    "object_tag": "light switch",
+    "object_caption": "A light switch on the wall next to the closet door.",
+    "bbox_extent": [
+      0.28,
+      0.13,
+      0.07
+    ],
+    "bbox_center": [
+      1.21,
+      -1.09,
+      0.01
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_10": {
+    "id": 15,
+    "object_tag": "coffee kettle",
+    "object_caption": "A coffee kettle on the cabinet.",
+    "bbox_extent": [
+      0.29,
+      0.21,
+      0.17
+    ],
+    "bbox_center": [
+      -0.58,
+      0.52,
+      -0.71
+    ],
+    "bbox_volume": 0.01
+  },
+  "object_11": {
+    "id": 16,
+    "object_tag": "book",
+    "object_caption": "A small blue book placed on the cabinet next to a plant.",
+    "bbox_extent": [
+      0.58,
+      0.51,
+      0.03
+    ],
+    "bbox_center": [
+      -0.66,
+      1.48,
+      -0.83
+    ],
+    "bbox_volume": 0.01
+  },
+  "object_12": {
+    "id": 20,
+    "object_tag": "cabinet",
+    "object_caption": "A wooden cabinet with multiple compartments located beneath the window.",
+    "bbox_extent": [
+      2.06,
+      0.76,
+      0.58
+    ],
+    "bbox_center": [
+      -0.59,
+      1.09,
+      -1.16
+    ],
+    "bbox_volume": 0.91
+  },
+  "object_13": {
+    "id": 39,
+    "object_tag": "pillow",
+    "object_caption": "A white pillow with a floral pattern on the sofa chair.",
+    "bbox_extent": [
+      0.59,
+      0.44,
+      0.45
+    ],
+    "bbox_center": [
+      2.75,
+      -0.37,
+      -0.83
+    ],
+    "bbox_volume": 0.12
+  },
+  "object_14": {
+    "id": 56,
+    "object_tag": "picture",
+    "object_caption": "Black and white picture of a boat on the wall above the couch.",
+    "bbox_extent": [
+      1.88,
+      1.29,
+      0.05
+    ],
+    "bbox_center": [
+      3.66,
+      -1.1,
+      0.08
+    ],
+    "bbox_volume": 0.12
+  },
+  "object_15": {
+    "id": 64,
+    "object_tag": "closet door",
+    "object_caption": "Wooden closet door with a handle and a frosted glass panel.",
+    "bbox_extent": [
+      2.35,
+      1.64,
+      0.1
+    ],
+    "bbox_center": [
+      0.21,
+      -1.13,
+      -0.3
+    ],
+    "bbox_volume": 0.39
+  },
+  "object_16": {
+    "id": 86,
+    "object_tag": "cushion",
+    "object_caption": "Pink cushion on the floor in front of the ottoman.",
+    "bbox_extent": [
+      0.79,
+      0.31,
+      0.02
+    ],
+    "bbox_center": [
+      1.74,
+      -0.16,
+      -1.49
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_17": {
+    "id": 99,
+    "object_tag": "lamp",
+    "object_caption": "Wall-mounted lamp emitting light above the end table.",
+    "bbox_extent": [
+      0.62,
+      0.26,
+      0.0
+    ],
+    "bbox_center": [
+      2.11,
+      -1.12,
+      -0.27
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_18": {
+    "id": 126,
+    "object_tag": "potted plant",
+    "object_caption": "A medium-sized green potted plant in a round vase on the cabinet.",
+    "bbox_extent": [
+      0.26,
+      0.52,
+      0.26
+    ],
+    "bbox_center": [
+      -0.61,
+      1.84,
+      -0.6
+    ],
+    "bbox_volume": 0.04
+  },
+  "object_19": {
+    "id": 169,
+    "object_tag": "power outlet",
+    "object_caption": "A power outlet positioned low on the right wall near the floor.",
+    "bbox_extent": [
+      0.16,
+      0.15,
+      0.01
+    ],
+    "bbox_center": [
+      -0.5,
+      3.32,
+      -1.05
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_20": {
+    "id": 184,
+    "object_tag": "ceiling",
+    "object_caption": "A small, rectangular cigar box on the side cabinet.",
+    "bbox_extent": [
+      4.94,
+      3.01,
+      0.09
+    ],
+    "bbox_center": [
+      0.48,
+      0.96,
+      1.22
+    ],
+    "bbox_volume": 1.34
+  },
+  "object_21": {
+    "id": 232,
+    "object_tag": "blinds",
+    "object_caption": "White blinds covering the window on the right wall.",
+    "bbox_extent": [
+      4.42,
+      2.63,
+      0.74
+    ],
+    "bbox_center": [
+      2.18,
+      3.18,
+      0.34
+    ],
+    "bbox_volume": 8.6
+  },
+  "object_22": {
+    "id": 279,
+    "object_tag": "sofa chair",
+    "object_caption": "A white or beige sofa chair with a patterned cushion on the left side of the room.",
+    "bbox_extent": [
+      2.36,
+      1.18,
+      0.78
+    ],
+    "bbox_center": [
+      3.67,
+      -0.41,
+      -1.05
+    ],
+    "bbox_volume": 2.17
+  },
+  "object_23": {
+    "id": 312,
+    "object_tag": "lamp",
+    "object_caption": "Tall lamp with a white shade placed near the potted plant.",
+    "bbox_extent": [
+      0.09,
+      0.06,
+      0.0
+    ],
+    "bbox_center": [
+      2.08,
+      -1.12,
+      -1.35
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_24": {
+    "id": 358,
+    "object_tag": "pillow",
+    "object_caption": "A colorful pillow with a pattern, partially visible at the bottom right corner of the image.",
+    "bbox_extent": [
+      0.28,
+      0.09,
+      0.06
+    ],
+    "bbox_center": [
+      2.75,
+      2.4,
+      -0.68
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_25": {
+    "id": 368,
+    "object_tag": "sofa chair",
+    "object_caption": "Partially visible sofa chair with a patterned pillow in the lower right corner.",
+    "bbox_extent": [
+      0.6,
+      0.44,
+      0.22
+    ],
+    "bbox_center": [
+      2.78,
+      2.25,
+      -0.87
+    ],
+    "bbox_volume": 0.06
+  },
+  "object_26": {
+    "id": 371,
+    "object_tag": "pillow",
+    "object_caption": "A decorative patterned pillow on the sofa chair.",
+    "bbox_extent": [
+      0.56,
+      0.53,
+      0.19
+    ],
+    "bbox_center": [
+      2.88,
+      2.45,
+      -0.81
+    ],
+    "bbox_volume": 0.06
+  },
+  "object_27": {
+    "id": 377,
+    "object_tag": "pillow",
+    "object_caption": "A white sofa chair with a decorative pillow.",
+    "bbox_extent": [
+      1.43,
+      0.93,
+      0.39
+    ],
+    "bbox_center": [
+      3.24,
+      2.68,
+      -0.87
+    ],
+    "bbox_volume": 0.52
+  },
+  "object_28": {
+    "id": 383,
+    "object_tag": "end table",
+    "object_caption": "A small cigar box placed on the side cabinet.",
+    "bbox_extent": [
+      0.7,
+      0.3,
+      0.02
+    ],
+    "bbox_center": [
+      2.13,
+      -0.42,
+      -1.49
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_29": {
+    "id": 481,
+    "object_tag": "sofa chair",
+    "object_caption": "A small cigar box on the side cabinet.",
+    "bbox_extent": [
+      0.67,
+      0.11,
+      0.0
+    ],
+    "bbox_center": [
+      1.45,
+      2.77,
+      -1.5
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_30": {
+    "id": 558,
+    "object_tag": "lamp",
+    "object_caption": "A table lamp with a rectangular shade in the left corner.",
+    "bbox_extent": [
+      0.98,
+      0.37,
+      0.23
+    ],
+    "bbox_center": [
+      1.96,
+      -0.83,
+      -0.35
+    ],
+    "bbox_volume": 0.08
+  },
+  "object_31": {
+    "id": 889,
+    "object_tag": "stool",
+    "object_caption": "A round footstool with a wooden top.",
+    "bbox_extent": [
+      0.62,
+      0.51,
+      0.02
+    ],
+    "bbox_center": [
+      2.3,
+      -0.77,
+      -1.49
+    ],
+    "bbox_volume": 0.01
+  },
+  "object_32": {
+    "id": 894,
+    "object_tag": "pillow",
+    "object_caption": "Gray pillow with a green floral pattern on the center of the couch.",
+    "bbox_extent": [
+      0.65,
+      0.57,
+      0.23
+    ],
+    "bbox_center": [
+      3.17,
+      -0.41,
+      -0.83
+    ],
+    "bbox_volume": 0.09
+  },
+  "object_33": {
+    "id": 945,
+    "object_tag": "pillow",
+    "object_caption": "A small rectangular cigar box on the side cabinet.",
+    "bbox_extent": [
+      0.48,
+      0.14,
+      0.11
+    ],
+    "bbox_center": [
+      3.76,
+      -0.68,
+      -0.82
+    ],
+    "bbox_volume": 0.01
+  },
+  "object_34": {
+    "id": 956,
+    "object_tag": "pillow",
+    "object_caption": "Beige pillow with a leaf pattern on the couch.",
+    "bbox_extent": [
+      0.43,
+      0.23,
+      0.11
+    ],
+    "bbox_center": [
+      4.03,
+      -0.53,
+      -0.84
+    ],
+    "bbox_volume": 0.01
+  },
+  "object_35": {
+    "id": 971,
+    "object_tag": "pillow",
+    "object_caption": "A square pillow with a green forest print on the left side of the couch.",
+    "bbox_extent": [
+      0.55,
+      0.55,
+      0.3
+    ],
+    "bbox_center": [
+      4.18,
+      -0.44,
+      -0.84
+    ],
+    "bbox_volume": 0.09
+  },
+  "object_36": {
+    "id": 980,
+    "object_tag": "pillow",
+    "object_caption": "A small dark pillow on top of another pillow.",
+    "bbox_extent": [
+      0.34,
+      0.19,
+      0.09
+    ],
+    "bbox_center": [
+      4.42,
+      -0.57,
+      -0.62
+    ],
+    "bbox_volume": 0.01
+  },
+  "object_37": {
+    "id": 981,
+    "object_tag": "wall",
+    "object_caption": "A small rectangular cigar box placed on the side cabinet.",
+    "bbox_extent": [
+      6.16,
+      3.34,
+      0.12
+    ],
+    "bbox_center": [
+      3.18,
+      -1.07,
+      0.21
+    ],
+    "bbox_volume": 2.47
+  },
+  "object_38": {
+    "id": 989,
+    "object_tag": "pillow",
+    "object_caption": "Dark-colored pillow on the left side of the couch.",
+    "bbox_extent": [
+      0.63,
+      0.52,
+      0.27
+    ],
+    "bbox_center": [
+      4.54,
+      -0.4,
+      -0.76
+    ],
+    "bbox_volume": 0.09
+  },
+  "object_39": {
+    "id": 1057,
+    "object_tag": "coffee table",
+    "object_caption": "Coffee table in front of the couch with a rug underneath.",
+    "bbox_extent": [
+      1.27,
+      0.47,
+      0.05
+    ],
+    "bbox_center": [
+      3.78,
+      0.84,
+      -1.01
+    ],
+    "bbox_volume": 0.03
+  },
+  "object_40": {
+    "id": 1061,
+    "object_tag": "bowl",
+    "object_caption": "Pink bowl on the coffee table.",
+    "bbox_extent": [
+      0.18,
+      0.14,
+      0.08
+    ],
+    "bbox_center": [
+      3.49,
+      1.06,
+      -0.77
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_41": {
+    "id": 1064,
+    "object_tag": "sofa chair",
+    "object_caption": "Yellow patterned sofa chair near the coffee table.",
+    "bbox_extent": [
+      0.31,
+      0.17,
+      0.16
+    ],
+    "bbox_center": [
+      5.34,
+      0.18,
+      -1.14
+    ],
+    "bbox_volume": 0.01
+  },
+  "object_42": {
+    "id": 1068,
+    "object_tag": "bottle",
+    "object_caption": "A bottle on the floor near the sofa chair.",
+    "bbox_extent": [
+      0.22,
+      0.07,
+      0.03
+    ],
+    "bbox_center": [
+      3.89,
+      0.98,
+      -0.85
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_43": {
+    "id": 1073,
+    "object_tag": "sofa chair",
+    "object_caption": "White sofa chair with a yellow accent.",
+    "bbox_extent": [
+      1.13,
+      0.5,
+      0.42
+    ],
+    "bbox_center": [
+      5.64,
+      0.33,
+      -0.84
+    ],
+    "bbox_volume": 0.24
+  },
+  "object_44": {
+    "id": 1077,
+    "object_tag": "pillow",
+    "object_caption": "A green pillow on the right side of the couch.",
+    "bbox_extent": [
+      0.31,
+      0.2,
+      0.08
+    ],
+    "bbox_center": [
+      5.84,
+      0.28,
+      -0.87
+    ],
+    "bbox_volume": 0.0
+  },
+  "object_45": {
+    "id": 1082,
+    "object_tag": "blinds",
+    "object_caption": "White blinds covering the window.",
+    "bbox_extent": [
+      1.84,
+      0.94,
+      0.05
+    ],
+    "bbox_center": [
+      6.84,
+      -0.75,
+      0.33
+    ],
+    "bbox_volume": 0.09
+  },
+  "object_46": {
+    "id": 1095,
+    "object_tag": "pillow",
+    "object_caption": "A decorative pillow without a prominent pattern on the couch.",
+    "bbox_extent": [
+      0.47,
+      0.46,
+      0.18
+    ],
+    "bbox_center": [
+      3.96,
+      2.78,
+      -0.79
+    ],
+    "bbox_volume": 0.04
+  },
+  "object_47": {
+    "id": 1100,
+    "object_tag": "blinds",
+    "object_caption": "Blinds covering the right window.",
+    "bbox_extent": [
+      2.12,
+      1.96,
+      0.02
+    ],
+    "bbox_center": [
+      3.2,
+      3.45,
+      0.32
+    ],
+    "bbox_volume": 0.08
+  }
+}

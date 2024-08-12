@@ -1,0 +1,6 @@
+*_env/
+en_US-*/
+stt2/
+vosk-model-*
+
+__pycache__/
