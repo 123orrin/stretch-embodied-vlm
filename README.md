@@ -10,7 +10,7 @@ Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
 
 ### Running VLM Teleop (TEMPORARY AUG13)
-- You will need **3 Terminals open on the workstation** and **1 on Stretch**
+- You will need **4 Terminals open on the workstation** and **1 on Stretch**
 - Make sure to **connect your microphone to the workstation**
 
 On **Stretch**, run:
@@ -45,6 +45,11 @@ cd ~/ament_ws
 source ./install/setup.bash
 cd src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev
 python3 move_to_object.py
+```
+
+On the **fourth terminal**, run
+```
+ollama serve
 ```
 
 
