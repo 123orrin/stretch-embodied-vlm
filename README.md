@@ -52,7 +52,6 @@ git clone https://github.com/123orrin/stretch_embodied_vlm.git
 
 cd ..
 colcon build --packages-select lsy_laptop_dev mic
-
 ```
 Now we have to set up the venv for the Speech to Text system:
 ```
