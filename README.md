@@ -8,7 +8,7 @@ Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
 </div>
 
-## Temporary Demo Instructions for Aug 9
+## Temporary Instructions
 
 
 ### Commanding Stretch using VLM Teleop
@@ -41,9 +41,9 @@ ros2 launch vlm_teleop_launch
 
 On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
 ```
-cd mic
+cd mic/mic
 python3 -m venv mic_env
-source stt_env/bin/activate
+source mic_env/bin/activate
 pip install -r requirements.txt
 python3 local_STT.py
 ```
@@ -96,27 +96,27 @@ Software:
 * ROS2 Humble
 
 ## 📦 Installation and Setup
-
-On the __workstation__, clone this repository:
+First create a ROS2 Humble workspace and name it ament_ws
 ```
+add instructions here
+```
+
+On the __workstation__ in the, clone this repository in src, and build it:
+```
+cd ~/ament_ws/src
 git clone https://github.com/123orrin/stretch_embodied_vlm.git
+
+cd ..
+colcon build --packages-select lsy_laptop_dev mic
+
+```
+Now we have to set up the venv for the Speech to Text system:
+```
+cd ~/ament_ws/src/stretch_embodied_vlm/mic/mic
+python3 -m venv mic_env   
+pip install -r requirements.txt 
 ```
 
-Then cd into the directory and set up the environment with the required libraries using:
-```
-cd stretch_embodied_vlm
-# python -m venv embodied_vlm_env   ADD THE VERSION 
-# pip install requirements.txt or however else we do it
-```
-
-On the workstation, you will also need to set up the speech to text system. In another terminal, setup another environment and enter the following:
-```
-python3 -m venv stt_env
-source stt_env/bin/activate
-
-pip install pyaudio
-pip install vosk
-```
 
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="30" height="30" /> Running Embodied VLM
