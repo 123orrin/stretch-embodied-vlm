@@ -8,63 +8,7 @@ Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
 </div>
 
-## Temporary Instructions
 
-
-### Commanding Stretch using VLM Teleop
-To begin the VLM Teleop demo, follow the instructions in the [<code>Running VLM Teleop</code>](##-running-vlm-teleop) section below.
-
-For each command/prompt, you must begin with "Amy". For example, "Amy, move forward 1 meter" will work.
-
-VLM Teleop has 4 functions:
-- **chat** - a simple conversation with Stretch
-- **describe** - describes what Stretch's camera sees
-- **move a certain distance and direction** - moves in a direction/turns by a certain distance or angle
-- **move towards an object** - moves towards an object in the camera's current field of vision (this is very buggy and bad right now)
-
-The code will automatically determine which function to perform based on the prompt you give. Simply begin to give your commands.
-
-
-
-### Running VLM Teleop
-- You will need **3 Terminals open on the workstation** and **1 on Stretch**
-- Make sure to **connect your microphone to the workstation**
-
-On **Stretch**, run:
-```
-stretch_free_robot_process.py
-stretch_robot_home.py
-
-cd ~/ament_ws/src/lsy_robot_dev/launch
-ros2 launch vlm_teleop_launch
-```
-
-On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
-```
-cd mic/mic
-python3 -m venv mic_env
-source mic_env/bin/activate
-pip install -r requirements.txt
-python3 local_STT.py
-```
-
-On the **second terminal**, run:
-```
-colcon build --packages-select lsy_laptop_dev
-source ./install/setup.bash
-cd src/lsy_laptop_dev/lsy_laptop_dev
-python3 vision_language_server_copy.py
-```
-
-On the **third terminal**, run
-```
-colcon build --packages-select lsy_laptop_dev
-source ./install/setup.bash
-cd src/lsy_laptop_dev/lsy_laptop_dev
-python3 move_to_object.py
-```
-
-Everything should be running then, and begin giving your commands!
 
 
 ## 🗺️ Table of Contents (everything under here is still work in progress)
@@ -144,3 +88,79 @@ If a "process has died" error is encountered, run ```stretch_free_robot_process.
 
 ## 📢 Acknowledgments
 #### $${\color{#AC3097}Thanks \space to \space our \space amazing \space Hello \space Robot \space team \space at \space LSY\color{red} ❤️}$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Temporary Instructions
+
+
+### Commanding Stretch using VLM Teleop
+To begin the VLM Teleop demo, follow the instructions in the [<code>Running VLM Teleop</code>](##-running-vlm-teleop) section below.
+
+For each command/prompt, you must begin with "Amy". For example, "Amy, move forward 1 meter" will work.
+
+VLM Teleop has 4 functions:
+- **chat** - a simple conversation with Stretch
+- **describe** - describes what Stretch's camera sees
+- **move a certain distance and direction** - moves in a direction/turns by a certain distance or angle
+- **move towards an object** - moves towards an object in the camera's current field of vision (this is very buggy and bad right now)
+
+The code will automatically determine which function to perform based on the prompt you give. Simply begin to give your commands.
+
+
+
+### Running VLM Teleop
+- You will need **3 Terminals open on the workstation** and **1 on Stretch**
+- Make sure to **connect your microphone to the workstation**
+
+On **Stretch**, run:
+```
+stretch_free_robot_process.py
+stretch_robot_home.py
+
+cd ~/ament_ws/src/lsy_robot_dev/launch
+ros2 launch vlm_teleop_launch
+```
+
+On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
+```
+cd mic/mic
+python3 -m venv mic_env
+source mic_env/bin/activate
+pip install -r requirements.txt
+python3 local_STT.py
+```
+
+On the **second terminal**, run:
+```
+colcon build --packages-select lsy_laptop_dev
+source ./install/setup.bash
+cd src/lsy_laptop_dev/lsy_laptop_dev
+python3 vision_language_server_copy.py
+```
+
+On the **third terminal**, run
+```
+colcon build --packages-select lsy_laptop_dev
+source ./install/setup.bash
+cd src/lsy_laptop_dev/lsy_laptop_dev
+python3 move_to_object.py
+```
+
+Everything should be running then, and begin giving your commands!
