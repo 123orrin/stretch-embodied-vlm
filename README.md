@@ -22,7 +22,7 @@ cd ~/ament_ws/src/lsy_robot_dev/launch
 ros2 launch vlm_teleop_launch
 ```
 
-On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
+On the **Workstation in the first terminal**, run the following commands. This should activate the Speech to Text system:
 ```
 cd ~ament_ws/src/stretch_embodied_vlm/mic/mic
 python3 -m venv mic_env
