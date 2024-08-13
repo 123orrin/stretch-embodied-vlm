@@ -99,7 +99,7 @@ Software:
 </div>
 
 
-### On the Workstation
+### _On the Workstation_
 First create a ROS2 Humble workspace and name it ament_ws
 ```
 add instructions here
@@ -135,12 +135,14 @@ cd ~/ament_ws
 colcon build --packages-select lsy_laptop_dev mic lsy_interfaces lsy_robot_dev
 ```
 
-### On the Robot
+### _On the Robot_
 Clone this repository in ament_ws in src:
 
 ```
 cd ~/ament_ws/src
 git clone https://github.com/123orrin/stretch_embodied_vlm.git
+
+colcon build --packages-select lsy_laptop_dev mic lsy_interfaces lsy_robot_dev
 ```
 
 <div align="center">
