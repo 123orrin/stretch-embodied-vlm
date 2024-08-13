@@ -19,6 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ConceptGraphService.srv"
   "srv/StretchSpeechService.srv"
   "msg/AB.msg"
+  "msg/Path.msg"
   DEPENDENCIES sensor_msgs geometry_msgs
   # DEPENDENCIES geometry_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
