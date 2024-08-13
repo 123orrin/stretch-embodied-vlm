@@ -71,12 +71,19 @@ ollama pull llama3.1
 ```
 
 
-Finally, build the packages to complete the:
+Finally, build the packages to complete the installation on the workstation:
 ```
 cd ~/ament_ws
 colcon build --packages-select lsy_laptop_dev mic lsy_interfaces lsy_robot_dev
 ```
 
+### On the Robot
+Clone this repository in ament_ws in src:
+
+```
+cd ~/ament_ws/src
+git clone https://github.com/123orrin/stretch_embodied_vlm.git
+```
 
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="30" height="30" /> Running Embodied VLM
