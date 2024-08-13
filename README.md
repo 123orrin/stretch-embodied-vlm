@@ -34,8 +34,8 @@ Hardware:
 * A workstation with GPU 
 
 Software:
-* Python 3.X __TO ADD LATER__
-* OpenAI Key
+* Python 3.10 
+* OpenAI Key (Only needed if using the describe operation)
 * Ubuntu 22.04
 * ROS2 Humble
 
