@@ -52,8 +52,12 @@ On the **fourth terminal**, run
 ollama serve
 ```
 
-
+<div align="center">
+  
 ## 🗺️ Table of Contents (everything under here is still work in progress)
+  
+</div>
+
 - [<code>What Embodied VLM Can Do
  </code>](#-what-embodied-vlm-can-do)
 - [<code>Hardware and Software Requirements</code>](#-hardware-and-software-requirements)
@@ -62,15 +66,21 @@ ollama serve
 - [<code>Basic Troubleshooting </code>](#-basic-troubleshooting)
 - [<code>Acknowledgments</code>](#-acknowledgments)
 
+<div align="center">
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png" alt="Robot" width="30" height="30" /> What Embodied VLM Can Do
 
+</div>
 
 __list them here__
 
 *
+<div align="center">
 
 ## 📗 Hardware and Software Requirements
+
+</div>
+
 Hardware:
 * [Hello Robot Stretch3](https://hello-robot.com/) 
 * A workstation with GPU 
@@ -81,7 +91,13 @@ Software:
 * Ubuntu 22.04
 * ROS2 Humble
 
+
+<div align="center">
+
 ## 📦 Installation and Setup
+
+</div>
+
 
 ### On the Workstation
 First create a ROS2 Humble workspace and name it ament_ws
@@ -127,8 +143,12 @@ cd ~/ament_ws/src
 git clone https://github.com/123orrin/stretch_embodied_vlm.git
 ```
 
+<div align="center">
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png" alt="Desktop Computer" width="30" height="30" /> Running Embodied VLM
+
+</div>
+
 Run the following commands on Stretch and the workstation:
 
 ### On the Robot
@@ -144,14 +164,21 @@ stretch_robot_home.py
 ```
 # Run services, launch launches, run other scripts
 ```
-
+<div align="center">
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Man%20Mechanic%20Light%20Skin%20Tone.png" alt="Man Mechanic Light Skin Tone" width="35" height="35" /> Basic Troubleshooting
 
+</div>
+
+
 If a "process has died" error is encountered, run ```stretch_free_robot_process.py``` and run the command again
 
+<div align="center">
 
 ## 📢 Acknowledgments
+
+</div>
+
 #### $${\color{#AC3097}Thanks \space to \space our \space amazing \space Hello \space Robot \space team \space at \space LSY\color{red} ❤️}$$
 
 
@@ -159,73 +186,3 @@ If a "process has died" error is encountered, run ```stretch_free_robot_process.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Temporary Instructions
-
-
-### Commanding Stretch using VLM Teleop
-To begin the VLM Teleop demo, follow the instructions in the [<code>Running VLM Teleop</code>](##-running-vlm-teleop) section below.
-
-For each command/prompt, you must begin with "Amy". For example, "Amy, move forward 1 meter" will work.
-
-VLM Teleop has 4 functions:
-- **chat** - a simple conversation with Stretch
-- **describe** - describes what Stretch's camera sees
-- **move a certain distance and direction** - moves in a direction/turns by a certain distance or angle
-- **move towards an object** - moves towards an object in the camera's current field of vision (this is very buggy and bad right now)
-
-The code will automatically determine which function to perform based on the prompt you give. Simply begin to give your commands.
-
-
-
-### Running VLM Teleop
-- You will need **3 Terminals open on the workstation** and **1 on Stretch**
-- Make sure to **connect your microphone to the workstation**
-
-On **Stretch**, run:
-```
-stretch_free_robot_process.py
-stretch_robot_home.py
-
-cd ~/ament_ws/src/lsy_robot_dev/launch
-ros2 launch vlm_teleop_launch
-```
-
-On the **Workstation in the first terminal**, the following commands. This should activate the Speech to Text system. _**Make sure you see a blue spinner saying recording or transcribing after you run ```python3 new.py```**_ If you don't, close the terminal and run this again:
-```
-cd mic/mic
-python3 -m venv mic_env
-source mic_env/bin/activate
-pip install -r requirements.txt
-python3 local_STT.py
-```
-
-On the **second terminal**, run:
-```
-colcon build --packages-select lsy_laptop_dev
-source ./install/setup.bash
-cd src/lsy_laptop_dev/lsy_laptop_dev
-python3 vision_language_server_copy.py
-```
-
-On the **third terminal**, run
-```
-colcon build --packages-select lsy_laptop_dev
-source ./install/setup.bash
-cd src/lsy_laptop_dev/lsy_laptop_dev
-python3 move_to_object.py
-```
-
-Everything should be running then, and begin giving your commands!
