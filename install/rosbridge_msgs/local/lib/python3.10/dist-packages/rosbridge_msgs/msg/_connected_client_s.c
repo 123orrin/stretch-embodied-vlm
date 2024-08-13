@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/rosbridge_msgs/rosidl_generator_py/rosbridge_msgs/msg/_connected_client_s.c

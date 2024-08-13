@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/rosapi_msgs/rosidl_typesupport_introspection_cpp/rosapi_msgs/srv/detail/get_ros_version__rosidl_typesupport_introspection_cpp.hpp

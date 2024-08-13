@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/speech_recognition_msgs/rosidl_generator_py/speech_recognition_msgs/_speech_recognition_msgs_s.ep.rosidl_typesupport_introspection_c.c

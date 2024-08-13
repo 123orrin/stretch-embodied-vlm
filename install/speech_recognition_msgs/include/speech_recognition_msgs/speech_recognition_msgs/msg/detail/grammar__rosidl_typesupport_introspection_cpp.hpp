@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/speech_recognition_msgs/rosidl_typesupport_introspection_cpp/speech_recognition_msgs/msg/detail/grammar__rosidl_typesupport_introspection_cpp.hpp

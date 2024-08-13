@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/audio_common_msgs/rosidl_typesupport_introspection_c/audio_common_msgs/msg/detail/audio_info__rosidl_typesupport_introspection_c.h

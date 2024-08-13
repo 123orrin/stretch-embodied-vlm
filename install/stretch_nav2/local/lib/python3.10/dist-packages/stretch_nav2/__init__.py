@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/src/stretch_ros2/stretch_nav2/stretch_nav2/__init__.py

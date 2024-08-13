@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/rosapi_msgs/rosidl_typesupport_fastrtps_cpp/rosapi_msgs/srv/detail/service_type__rosidl_typesupport_fastrtps_cpp.hpp

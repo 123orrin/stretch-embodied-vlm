@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/audio_common_msgs/rosidl_generator_cpp/audio_common_msgs/msg/audio_data.hpp

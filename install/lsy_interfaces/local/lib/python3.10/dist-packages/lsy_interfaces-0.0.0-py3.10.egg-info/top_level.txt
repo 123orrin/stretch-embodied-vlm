@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/lsy_interfaces/ament_cmake_python/lsy_interfaces/lsy_interfaces.egg-info/top_level.txt

@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/src/stretch_web_teleop/nodes/compressed_image_visualizer.py

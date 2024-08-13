@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/rosbridge_msgs/rosidl_generator_py/rosbridge_msgs/_rosbridge_msgs_s.ep.rosidl_typesupport_c.c

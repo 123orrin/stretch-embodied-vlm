@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/lsy_interfaces/rosidl_typesupport_fastrtps_c/lsy_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h

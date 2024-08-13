@@ -1,6 +1,0 @@
-source;share/lsy_laptop_dev/hook/pythonpath.ps1
-source;share/lsy_laptop_dev/hook/pythonpath.dsv
-source;share/lsy_laptop_dev/hook/pythonpath.sh
-source;share/lsy_laptop_dev/hook/ament_prefix_path.ps1
-source;share/lsy_laptop_dev/hook/ament_prefix_path.dsv
-source;share/lsy_laptop_dev/hook/ament_prefix_path.sh

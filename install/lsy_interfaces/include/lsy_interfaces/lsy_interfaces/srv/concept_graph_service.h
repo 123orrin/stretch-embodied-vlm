@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/lsy_interfaces/rosidl_generator_c/lsy_interfaces/srv/concept_graph_service.h

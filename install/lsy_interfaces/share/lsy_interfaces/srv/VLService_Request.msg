@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/lsy_interfaces/rosidl_cmake/srv/VLService_Request.msg

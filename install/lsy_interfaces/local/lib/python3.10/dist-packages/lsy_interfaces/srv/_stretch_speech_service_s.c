@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/lsy_interfaces/rosidl_generator_py/lsy_interfaces/srv/_stretch_speech_service_s.c

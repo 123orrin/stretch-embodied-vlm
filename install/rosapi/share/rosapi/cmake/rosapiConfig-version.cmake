@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/rosapi/ament_cmake_core/rosapiConfig-version.cmake

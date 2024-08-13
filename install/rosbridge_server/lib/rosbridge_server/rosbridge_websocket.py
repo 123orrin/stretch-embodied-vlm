@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/src/rosbridge_suite/rosbridge_server/scripts/rosbridge_websocket.py

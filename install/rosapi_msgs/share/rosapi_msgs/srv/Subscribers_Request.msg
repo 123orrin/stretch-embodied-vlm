@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/rosapi_msgs/rosidl_cmake/srv/Subscribers_Request.msg

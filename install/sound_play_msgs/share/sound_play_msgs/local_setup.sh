@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/sound_play_msgs/ament_cmake_environment_hooks/local_setup.sh

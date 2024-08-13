@@ -1,1 +1,0 @@
-/home/hello-robot/ament_ws/build/speech_recognition_msgs/rosidl_typesupport_fastrtps_c/speech_recognition_msgs/msg/detail/phrase_rule__rosidl_typesupport_fastrtps_c.h
