@@ -40,24 +40,41 @@ Software:
 * ROS2 Humble
 
 ## 📦 Installation and Setup
+
+### On the Workstation
 First create a ROS2 Humble workspace and name it ament_ws
 ```
 add instructions here
 ```
 
-On the __workstation__ in the, clone this repository in src, and build it:
+Clone this repository in src:
 ```
 cd ~/ament_ws/src
 git clone https://github.com/123orrin/stretch_embodied_vlm.git
-
-cd ..
-colcon build --packages-select lsy_laptop_dev mic
 ```
-Now we have to set up the venv for the Speech to Text system:
+
+Now we have to set up the venvs for vlm_teleop and the Speech to Text system:
 ```
 cd ~/ament_ws/src/stretch_embodied_vlm/mic/mic
 python3 -m venv mic_env   
-pip install -r requirements.txt 
+pip install -r requirements.txt
+
+cd ~/ament_ws/src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev
+python3 -m venv vlm_env
+pip install -r requirements.txt
+```
+
+Our code uses ollama (the specific model is Llama3.1) as our LLM for local and offline inference. If you have not set it up before, follow these instructions:
+```
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull llama3.1
+```
+
+
+Finally, build the packages to complete the:
+```
+cd ~/ament_ws
+colcon build --packages-select lsy_laptop_dev mic lsy_interfaces lsy_robot_dev
 ```
 
 
