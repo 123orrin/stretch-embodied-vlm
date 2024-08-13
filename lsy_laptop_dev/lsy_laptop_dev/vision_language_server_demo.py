@@ -33,7 +33,7 @@ class VLServer(Node):
         self.messages = [] # for the purpose of message history
         self.openai_vision_detail = "low"  # can also be set to: "high" or "auto", but "high" is more expensive
         
-        self.image_path = '/home/hornywombat/stretch-images-vlmteleop/vlm_teleop_image.jpeg'
+        self.image_path = '/home/hornylemur/stretch_images_vlmteleop/vlm_teleop_image.jpeg'
 
         self.sub = self.create_subscription(PointStamped, '/clicked_point', self.a, 1)
 
