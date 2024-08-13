@@ -44,7 +44,7 @@ import numpy as np
 
 
 def tts_and_audio_output(message):
-    model = '/home/hornywombat/repos/mic/en_US-lessac-medium.onnx'
+    model = '/home/hornylemur/ament_ws/src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev/piper_voices/en_US-lessac-medium.onnx'
     voice = PiperVoice.load(model)
     text = message
     stream = sd.OutputStream(samplerate=voice.config.sample_rate, channels=1, dtype='int16')
@@ -80,7 +80,7 @@ class VLMTeleop(hm.HelloNode):
         self.result = None  # used in read_message --> not needed? remove if not
 
         # Initialize subscribers and publishers
-        self.speech_to_text_sub = self.create_subscription(String, "/hehe", self.callback_speech, 1) # look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
+        self.speech_to_text_sub = self.create_subscription(String, "/mic_stt", self.callback_speech, 1) # look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
         # self.speech_to_text_sub = self.create_subscription(SpeechRecognitionCandidates, "/speech_to_text", self.callback_speech, 1) ## look into SpeechRecognitionCandidates to see how we can make robot only detect when a human is talking to it
 
         self.create_subscription(JointState, '/stretch/joint_states', self.joint_states_callback, 1)
