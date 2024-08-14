@@ -191,8 +191,12 @@ python3 move_to_object.py
 
 </div>
 
+### On Stretch
+- If a "_process has died_" error is encountered on Stretch, run ```stretch_free_robot_process.py``` and run the command again
+- If when running ```ros2 launch vlm_teleop_launch``` and an error similar to "_<< device >> not found_" where the device could be either the gripper or head camera, make sure to double check that the cameras are properly plugged into the robot
 
-If a "process has died" error is encountered, run ```stretch_free_robot_process.py``` and run the command again
+### On the Workstation
+- If a "_no module named lsy_interfaces_" or "_no module named hello-helpers_" is encountered, run ```source ~/ament_ws/install/setup.bash```
 
 <div align="center">
 
