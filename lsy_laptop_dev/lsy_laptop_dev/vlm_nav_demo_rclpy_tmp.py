@@ -1,5 +1,4 @@
 from lsy_interfaces.srv import VLService
-import hello_helpers.hello_misc as hm
 
 import os
 from sound_play.libsoundplay import SoundClient
@@ -57,11 +56,10 @@ def tts_and_audio_output(message):
         stream.close()
     
 
-class VLMTeleop(hm.HelloNode):
+class VLMTeleop(Node):
 
     def __init__(self):
-        hm.HelloNode.__init__(self)
-        hm.HelloNode.main(self, 'vlm_teleop', 'vlm_teleop', wait_for_first_pointcloud=False)
+        super().__init__('vlm_nav_demo')
 
         self.rate = 10.0
         self.joint_state = None
@@ -203,47 +201,47 @@ class VLMTeleop(hm.HelloNode):
             self.get_logger().info(f'VLM Result: {vl_result}')
         
 		############# LOCAL TTS FUNCTION #############
-            tts_and_audio_output(vl_result.result)
+            #  tts_and_audio_output(vl_result.result)
 
         ############# OPENAI TTS, WHERE INPUT TO TTS IS vl_result.result #############
-            # tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
-            #                                           voice=self.tts_voice,
-            #                                           input=vl_result.result,
-            #                                           response_format="wav",
-            #                                           timeout=60)
-            # audio_result_path = "./vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
-            # tts_response.write_to_file(audio_result_path)
-            # print("File should be saved now.")
-            # print("Speaking should start now.")
+            tts_response = self.openai_client.audio.speech.create(model=self.tts_model,
+                                                      voice=self.tts_voice,
+                                                      input=vl_result.result,
+                                                      response_format="wav",
+                                                      timeout=60)
+            audio_result_path = "./vlm_teleop_openai_tts.wav" # must be .WAV or .OGG
+            tts_response.write_to_file(audio_result_path)
+            print("File should be saved now.")
+            print("Speaking should start now.")
             
-            # #define stream chunk   
-            # chunk = 1024  
+            #define stream chunk   
+            chunk = 1024  
             
-            # #open a wav format music  
+            #open a wav format music  
 
-            # f = wave.open(r"./vlm_teleop_openai_tts.wav","rb")  
-            # #instantiate PyAudio  
-            # p = pyaudio.PyAudio()  
-            # #open stream  
-            # stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
-            #                 channels = f.getnchannels(),  
-            #                 rate = f.getframerate(),  
-            #                 output = True)  
-            # #read data  
-            # data = f.readframes(chunk)  
+            f = wave.open(r"./vlm_teleop_openai_tts.wav","rb")  
+            #instantiate PyAudio  
+            p = pyaudio.PyAudio()  
+            #open stream  
+            stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
+                            channels = f.getnchannels(),  
+                            rate = f.getframerate(),  
+                            output = True)  
+            #read data  
+            data = f.readframes(chunk)  
             
-            # #play stream  
-            # while data:  
-            #     stream.write(data)  
-            #     data = f.readframes(chunk)  
+            #play stream  
+            while data:  
+                stream.write(data)  
+                data = f.readframes(chunk)  
             
-            # #stop stream  
-            # stream.stop_stream()  
-            # stream.close()  
+            #stop stream  
+            stream.stop_stream()  
+            stream.close()  
             
-            # #close PyAudio  
-            # p.terminate() 
-            # print("Speaking should have ended now.")
+            #close PyAudio  
+            p.terminate() 
+            print("Speaking should have ended now.")
         ############ END OF OPENAI TTS #############
             
 
@@ -257,6 +255,7 @@ class VLMTeleop(hm.HelloNode):
 
     ############################################################# MOVE BY SPECIFIC DISTANCE #############################################################           
         elif prompt_type == 'move by specific distance' and joint_state is not None:
+            print('iudhglgldkjgldakjgnfdhj')
             tts_and_audio_output('Sure!')
             ######################### END OF ACKNOWLEDGEMENT #########################
             print('Made it into "move" elif statement.')
