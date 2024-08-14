@@ -196,10 +196,10 @@ python3 move_to_object.py
 - If when running ```ros2 launch vlm_teleop_launch``` and an error similar to "_<< device >> not found_" where the device could be either the gripper or head camera, make sure to double check that the cameras are properly plugged into the robot
 
 ### On the Workstation
-- **If a "_no module named lsy_interfaces_" or "_no module named hello-helpers_" is encountered**: run ```source ~/ament_ws/install/setup.bash```
-- **If you save your code and run it, but only the previous version is run:** make sure to colcon build the code every time you change the code
-- **If move_to_object.py is not receiving verbal commands:** Double check that the ROS2 topics being subscribed to in move_to_object.py and published by local_STT.py are the same.
-- **If local_STT.py is not showing transcribed verbal commands:** Ensure that microphone is properly set up. Replug the microphone and  go to your computer settings and ensure that your microphone is set as the device for audio input.
+- If a "_no module named lsy_interfaces_" or "_no module named hello-helpers_" is encountered: run ```source ~/ament_ws/install/setup.bash```
+- If you save your code and run it, but only the previous version is run: make sure to colcon build the code every time you change the code
+- If move_to_object.py is not receiving verbal commands: Double check that the ROS2 topics being subscribed to in move_to_object.py and published by local_STT.py are the same.
+- If local_STT.py is not showing transcribed verbal commands: Ensure that microphone is properly set up. Replug the microphone and  go to your computer settings and ensure that your microphone is set as the device for audio input.
 
 
 
