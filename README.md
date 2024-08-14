@@ -149,7 +149,8 @@ colcon build --packages-select lsy_laptop_dev mic lsy_interfaces lsy_robot_dev
 - You will need **3 Terminals open on the workstation** and **1 on Stretch**
 - Make sure to **connect your microphone to the workstation**
 
-On **Stretch**, run:
+### On Stretch
+Run:
 ```
 stretch_free_robot_process.py
 stretch_robot_home.py
@@ -158,7 +159,10 @@ cd ~/ament_ws/src/lsy_robot_dev/launch
 ros2 launch vlm_teleop_launch
 ```
 
-On the **Workstation in the first terminal**, run the following commands. This should activate the Speech to Text system make sure to also **plug in a microphone** to the workstation:
+### On the Workstation
+- Before running VLM Teleop, make sure that **Stretch and the Workstation are connected to the same internet network**. When you run ```ros2 topic list``` in the workstation's terminal, it should show the topics published by the robot
+
+In the **first terminal**, run the following commands. Make sure to also **plug in a microphone** to the workstation:
 ```
 cd ~ament_ws/src/stretch_embodied_vlm/mic/mic
 source mic_env/bin/activate
