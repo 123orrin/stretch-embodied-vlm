@@ -1,6 +1,5 @@
 <div align="center">
   
-__Add pano photo of drone room here__
 # Stretch Embodied VLM
 Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
