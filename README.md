@@ -83,7 +83,7 @@ Hardware:
 
 Software:
 * Python 3.10 
-* OpenAI Key (Only needed if using the describe operation)
+* OpenAI Key 
 * Ubuntu 22.04
 * ROS2 Humble
 
