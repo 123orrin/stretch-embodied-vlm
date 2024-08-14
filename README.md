@@ -110,13 +110,13 @@ git clone https://github.com/123orrin/stretch_embodied_vlm.git
 Now we have to set up the venvs for vlm_teleop and the Speech to Text system:
 ```
 cd ~/ament_ws/src/stretch_embodied_vlm/mic/mic
-python3 -m venv mic_env   
-pip install -r requirements.txt
+python3 -m venv mic_env
+pip install vosk
+pip install pyaudio
 
 cd ~/ament_ws/src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev
 python3 -m venv vlm_env
-pip install vosk
-pip install pyaudio
+pip install -r requirements.txt
 ```
 
 
