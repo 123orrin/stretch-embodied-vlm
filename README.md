@@ -159,6 +159,7 @@ On the **Workstation in the first terminal**, run the following commands. This s
 ```
 cd ~ament_ws/src/stretch_embodied_vlm/mic/mic
 source mic_env/bin/activate
+
 python3 local_STT.py
 ```
 
@@ -166,8 +167,10 @@ On the **second terminal**, run:
 ```
 cd ~/ament_ws
 source install/setup.bash
+
 cd src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev
 source vlm_env/bin/activate
+
 python3 vision_language_server_copy.py
 ```
 
@@ -175,11 +178,13 @@ On the **third terminal**, run
 ```
 cd ~/ament_ws
 source install/setup.bash
+
 cd src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev
 source vlm_env/bin/activate
+
 python3 move_to_object.py
 ```
-```
+
 <div align="center">
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Man%20Mechanic%20Light%20Skin%20Tone.png" alt="Man Mechanic Light Skin Tone" width="35" height="35" /> Basic Troubleshooting
