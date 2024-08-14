@@ -115,13 +115,8 @@ pip install -r requirements.txt
 
 cd ~/ament_ws/src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev
 python3 -m venv vlm_env
-pip install -r requirements.txt
-```
-
-Our code uses ollama (the specific model is Llama3.1) as our LLM for local and offline inference. If you have not set it up before, follow these instructions:
-```
-curl -fsSL https://ollama.com/install.sh | sh
-ollama pull llama3.1
+pip install vosk
+pip install pyaudio
 ```
 
 
