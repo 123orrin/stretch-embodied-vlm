@@ -71,7 +71,9 @@ python3 move_to_object.py
 
 __list them here__
 
-*
+* Take in verbal commands
+* Explore unseen environments
+* Converse with the user
 <div align="center">
 
 ## 📗 Hardware and Software Requirements
@@ -80,7 +82,8 @@ __list them here__
 
 Hardware:
 * [Hello Robot Stretch3](https://hello-robot.com/) 
-* A workstation with GPU 
+* A workstation with GPU
+* A microphone
 
 Software:
 * Python 3.10 
