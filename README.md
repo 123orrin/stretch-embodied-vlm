@@ -27,7 +27,8 @@ On the **Workstation in the first terminal**, run the following commands. This s
 cd ~ament_ws/src/stretch_embodied_vlm/mic/mic
 python3 -m venv mic_env
 source mic_env/bin/activate
-pip install -r requirements.txt
+pip install vosk
+pip install pyaudio
 python3 local_STT.py
 ```
 
