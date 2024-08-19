@@ -286,12 +286,11 @@ class VLMTeleop(hm.HelloNode):
             move_distances_list = temp_move_distances_list.split(',')
             print(f"Directions List: {move_directions_list}")
             print(f"Distances List: {move_distances_list}")
-    
 
             assert len(move_directions_list) == len(move_distances_list)
 
 
-# Sending commnads to robot
+            # Sending commands to robot
             for i in range(len(move_directions_list)):
                 print('direction_i, distance_i: ', move_directions_list[i], move_distances_list[i])
                 if move_distances_list[i] == '':
@@ -311,15 +310,21 @@ class VLMTeleop(hm.HelloNode):
                     if move_directions_list[i] == 'backward':
                         inc = -inc
 
+                    print('right before trajectory_goal.trajectory.joint_names = [joint_name]')
                     trajectory_goal.trajectory.joint_names = [joint_name]
+                    print('right after trajectory_goal.trajectory.joint_names = [joint_name]')
                     new_value = inc
                     # Assign the new_value position to the trajectory goal message prompt_type
                     point.positions = [new_value]
                     trajectory_goal.trajectory.points = [point]
+                    print('right before trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()')
                     trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()
+                    print('right after trajectory_goal.trajectory.header.stamp = self.get_clock().now().to_msg()')
                     #self.get_logger().info('joint_name = {0}, trajectory_goal = {1}'.format(joint_name, trajectory_goal))
                     # Make the action call and send goal of the new joint position
+                    print('right before self.trajectory_client.send_goal_async(trajectory_goal)')
                     self.trajectory_client.send_goal_async(trajectory_goal)
+                    print('right after self.trajectory_client.send_goal_async(trajectory_goal)')
                     time.sleep(5)
                     self.get_logger().info('Done sending linear translation command.')
                     
