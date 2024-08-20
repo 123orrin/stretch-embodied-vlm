@@ -217,9 +217,3 @@ python3 move_to_object.py
 </div>
 
 #### $${\color{#AC3097}Thanks \space to \space our \space amazing \space Hello \space Robot \space team \space at \space LSY\color{red} ❤️}$$
-
-
-
-
-
-
