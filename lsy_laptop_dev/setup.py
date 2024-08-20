@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'vision_language_server = lsy_laptop_dev.vision_language_server:main'
+            'vision_language_server_demo = lsy_laptop_dev.vision_language_server_demo:main',
+            'vlm_nav_demo = lsy_laptop_dev.vlm_nav_demo:main'
         ],
     },
 )

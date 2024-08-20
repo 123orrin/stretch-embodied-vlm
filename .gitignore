@@ -1,0 +1,8 @@
+*_env/
+en_US-*/
+stt2/
+vosk-model-*
+scrap/
+scrap2/
+
+__pycache__/

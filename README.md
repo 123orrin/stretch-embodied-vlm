@@ -8,7 +8,6 @@ Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
 </div>
 
-
 ### Running VLM Teleop (TEMPORARY AUG13)
 - You will need **3 Terminals open on the workstation** and **1 on Stretch**
 - Make sure to **connect your microphone to the workstation**
@@ -27,6 +26,7 @@ On the **Workstation in the first terminal**, run the following commands. This s
 cd ~ament_ws/src/stretch_embodied_vlm/mic/mic
 python3 -m venv mic_env
 source mic_env/bin/activate
+pip install -r requirements.txt
 pip install vosk
 pip install pyaudio
 python3 local_STT.py
@@ -47,7 +47,6 @@ source ./install/setup.bash
 cd src/stretch_embodied_vlm/lsy_laptop_dev/lsy_laptop_dev
 python3 move_to_object.py
 ```
-
 
 <div align="center">
   
