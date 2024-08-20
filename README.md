@@ -3,7 +3,7 @@
 # Stretch Embodied VLM
 Embodied AI with the Hello Robot Stretch3 at the Learning Systems & Robotics Lab
 
-[![PyTorch](https://img.shields.io/badge/Demonstration_Video-db6a4b.svg?style=for-the-badge&logo=airplayvideo)](https://shattereddisk.github.io/rickroll/rickroll.mp4)
+[![PyTorch](https://img.shields.io/badge/Demonstration_Video-db6a4b.svg?style=for-the-badge&logo=airplayvideo)]()
 ![IMG_2659](https://github.com/user-attachments/assets/ec885412-c74a-4466-96d1-6ccab2db6178)
 
 </div>
